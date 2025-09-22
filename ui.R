@@ -8,16 +8,13 @@ ui <- fluidPage(
   # Sidebar with a slider input for number of bins 
   sidebarLayout(
     sidebarPanel(
-      sliderInput("bins",
-                  "Number of bins:",
-                  min = 1,
-                  max = 50,
-                  value = 30)
-    ),
+      selectInput("var", "Que voulez-vous voir sur cette carte?", colnames(france_dep_data)[11:35]
+    )),
     
     # Show a plot of the generated distribution
     mainPanel(
-      plotOutput("distPlot")
+      plotOutput("genMap")
     )
   )
 )
+

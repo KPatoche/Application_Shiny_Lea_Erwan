@@ -1,14 +1,11 @@
 # Define server logic required to draw a histogram
 server <- function(input, output) {
   
-  output$distPlot <- renderPlot({
-    # generate bins based on input$bins from ui.R
-    x    <- faithful[, 2]
-    bins <- seq(min(x), max(x), length.out = input$bins + 1)
+  output$genMap <- renderPlot({
     
-    # draw the histogram with the specified number of bins
-    hist(x, breaks = bins, col = 'darkgray', border = 'white',
-         xlab = 'Waiting time to next eruption (in mins)',
-         main = 'Histogram of waiting times')
+    ggplot(data=france_dep_data,aes(x=long,y=lat,group=group,fill=.data[[input$var]]))+ 
+      geom_polygon(col="white") + 
+      theme_minimal() +
+      scale_fill_gradientn(colors = c("darkred","red","gray","lightblue","darkblue"))
   })
 }

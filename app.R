@@ -8,6 +8,10 @@
 #
 
 library(shiny)
+library(tidyverse)
+library(maps)
+library(readr)
+library(RColorBrewer)
 
 
 # Run the application 

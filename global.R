@@ -3,6 +3,8 @@ library(maps)
 library(readr)
 library(RColorBrewer)
 library(sf)
+library(Factoshiny)
+library(ggrepel)
 
 france_dep <- map_data(map = "france")
 colnames(france_dep)[5]<- "nom_departement"
@@ -30,6 +32,14 @@ france_dep_data %>%
   filter(année_publication==2023) %>% 
   ggplot(aes(x=long,y=lat,group=group,fill=nom_departement))+ 
   geom_polygon(col="white")
+
+
+dta %>% 
+  filter(année_publication==2023) %>% 
+  ggplot(aes(x=tx_pauvrete,y=tx_log_sociaux,label=code_departement)) +
+  geom_point() + geom_text_repel()
+
+Factoshiny(dta)
 
 url <- "https://france-geojson.gregoiredavid.fr/repo/regions.geojson"
 regions <- st_read(url)

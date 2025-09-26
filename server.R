@@ -6,6 +6,7 @@ server <- function(input, output) {
     ggplot(data=france_dep_data,aes(x=long,y=lat,group=group,fill=.data[[input$var]]))+ 
       geom_polygon(col="white") + 
       theme_minimal() +
-      scale_fill_gradientn(colors = c("darkred","red","gray","lightblue","darkblue"))
+      scale_fill_gradientn(colors = c("darkred","red","gray","blue","darkblue"))
   })
 }
+

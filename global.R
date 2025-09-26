@@ -2,6 +2,7 @@ library(tidyverse)
 library(maps)
 library(readr)
 library(RColorBrewer)
+library(sf)
 
 france_dep <- map_data(map = "france")
 colnames(france_dep)[5]<- "nom_departement"
@@ -30,3 +31,37 @@ france_dep_data %>%
   ggplot(aes(x=long,y=lat,group=group,fill=nom_departement))+ 
   geom_polygon(col="white")
 
+url <- "https://france-geojson.gregoiredavid.fr/repo/regions.geojson"
+regions <- st_read(url)
+
+colnames(regions)[2]<- "nom_region"
+
+regions$nom_region[regions$nom_region == 'Auvergne-Rhône-Alpes'] <- 'AUVERGNE-RHÔNE-ALPES'
+regions$nom_region[regions$nom_region == 'Bourgogne-Franche-Comté'] <- 'BOURGOGNE-FRANCHE-COMTÉ'
+regions$nom_region[regions$nom_region == 'Bretagne'] <- 'BRETAGNE'
+regions$nom_region[regions$nom_region == 'Centre-Val de Loire'] <- 'CENTRE-VAL DE LOIRE'
+regions$nom_region[regions$nom_region == 'Corse'] <- 'CORSE'
+regions$nom_region[regions$nom_region == 'Grand Est'] <- 'GRAND EST'
+regions$nom_region[regions$nom_region == 'Guadeloupe'] <- 'GUADELOUPE'
+regions$nom_region[regions$nom_region == 'Guyane'] <- 'GUYANE'
+regions$nom_region[regions$nom_region == 'Hauts-de-France'] <- 'HAUTS-DE-FRANCE'
+regions$nom_region[regions$nom_region == 'Île-de-France'] <- 'ÎLE-DE-FRANCE'
+regions$nom_region[regions$nom_region == 'La réunion'] <- 'LA RÉUNION'
+regions$nom_region[regions$nom_region == 'Martinique'] <- 'MARTINIQUE'
+regions$nom_region[regions$nom_region == 'Normandie'] <- 'NORMANDIE'
+regions$nom_region[regions$nom_region == 'Nouvelle-Aquitaine'] <- 'NOUVELLE-AQUITAINE'
+regions$nom_region[regions$nom_region == 'Occitanie'] <- 'OCCITANIE'
+regions$nom_region[regions$nom_region == 'Pays de la Loire'] <- 'PAYS DE LA LOIRE'
+regions$nom_region[regions$nom_region == "Provence-Alpes-Côte d'Azur"] <- "PROVENCE-ALPES-CÔTE D'AZUR"
+
+france_dep_data <- left_join(regions,france_dep_data,by=join_by(nom_region))
+
+View(france_dep_data)
+
+france_dep_data %>% 
+  filter(année_publication==2023) %>% 
+  ggplot(aes(x=long,y=lat,group=group,fill=nom_region))+ 
+  geom_polygon(col="white")
+
+france_dep_data$code <- NULL
+france_dep_data$subregion <- NULL

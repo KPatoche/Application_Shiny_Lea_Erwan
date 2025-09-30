@@ -9,14 +9,16 @@ library(readxl)
 library(corrplot)
 
 
-#Importation de la carte
+#### Importation de la carte ####
 france_dep <- map_data(map = "france")
 colnames(france_dep)[5]<- "nom_departement"
+
 #Mise en forme des nom de départements
 france_dep$nom_departement <- tolower(france_dep$nom_departement)
 france_dep$nom_departement[france_dep$nom_departement == 'corse du sud'] <- 'corse-du-sud'
 
-#Importation des données
+#### Importation des données ####
+
 dta <- read_delim("logements-et-logements-sociaux-dans-les-departements.csv", 
                   delim = ";", escape_double = FALSE, trim_ws = TRUE)
 dta <- dta[,-31]
@@ -37,7 +39,7 @@ dta <- dta %>%
   arrange(code_departement,desc(année_publication)) %>% 
   mutate(tx_pauvrete = lag(tx_pauvrete))
 
-#Importation des taux de pauvrete en 2021
+#### Importation des taux de pauvrete en 2021 ####
 Taux_pauvrete_2021 <- read_excel("Taux_pauvrete_2021.xlsx")
 
 Taux_pauvrete_2021$Departement <- iconv(Taux_pauvrete_2021$Departement,to="ASCII//TRANSLIT")
@@ -45,7 +47,7 @@ Taux_pauvrete_2021$Departement <- str_remove(Taux_pauvrete_2021$Departement,"'")
 Taux_pauvrete_2021$Departement <- tolower(Taux_pauvrete_2021$Departement)
 colnames(Taux_pauvrete_2021)[2:3] <- c("nom_departement","pauvrete_2021")
 
-#Ajout des tx de pauvrete 2021
+#Ajout des tx de pauvrete 2021 au jeu de données global
 dta <- dta %>% 
   left_join(Taux_pauvrete_2021) %>% 
   mutate(tx_pauvrete = ifelse(année_publication==2021,pauvrete_2021,tx_pauvrete)) %>% 
@@ -54,7 +56,7 @@ dta <- dta %>%
 dta <- dta %>% 
   filter(!(code_departement %in% c("971","972","973","974")))
 
-#Fusion données sociales et carte
+#### Fusion données sociales et carte ####
 france_dep_data <- left_join(france_dep,dta,by=join_by(nom_departement))
 
 #Création de la carte
@@ -127,4 +129,40 @@ dta %>%
   ggplot(aes(x=as.integer(code_departement),y=tx_pauvrete,col=année_publication))+
   geom_point()
 
-  
+
+# Transform to leaflet projection if needed
+
+conversion_leaflet <- function(df){
+  france_leaf <- df %>% 
+    group_by(nom_departement,group) %>% 
+    summarise(
+      geometry = list(st_polygon(list(cbind(long,lat)))),.groups = "drop"
+      )
+  return(france_leaf)
+}
+
+france_dep_leaf<- france_dep %>% 
+  filter(is.na(subregion))
+
+test <- conversion_leaflet(france_dep_leaf)
+test <- st_as_sf(test)
+
+
+
+test <- left_join(test,dta,by=join_by(nom_departement))
+
+pal <- leaflet::colorNumeric(c("red","darkgreen"),domain=test$tx_pauvrete)
+
+leaflet(test) %>%  # ton objet sf
+  addTiles() %>%
+  addPolygons(
+    layerId = ~nom_departement,    # id pour le clic
+    label = ~nom_departement,      # label affiché au survol
+    color = "blue",
+    fillColor = ~pal(tx_pauvrete),
+    weight = 1,
+    fillOpacity = 0.7
+  )
+
+test <- st_set_crs(test, 4326)
+

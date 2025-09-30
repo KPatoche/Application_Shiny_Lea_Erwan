@@ -20,7 +20,8 @@ ui <- navbarPage("Pavillon'R",
                  # ---- Onglet 2 sans sidebar ----
                  tabPanel("Département",
                           fluidPage(
-                            plotOutput("genMap_1")
+                            titlePanel("Carte interactive - Département"),
+                            leafletOutput("map", height = "90vh")
                           )
                  ),
                  

@@ -14,8 +14,10 @@ library(readxl)
 library(corrplot)
 library(DT)
 library(ggridges)
+library(leaflet)
 
-
+source("ui.R")
+source("server.R")
 
 # Run the application 
 shinyApp(ui = ui, server = server)

@@ -8,6 +8,7 @@ library(ggrepel)
 library(readxl)
 library(corrplot)
 
+
 #Importation de la carte
 france_dep <- map_data(map = "france")
 colnames(france_dep)[5]<- "nom_departement"

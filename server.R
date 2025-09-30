@@ -22,5 +22,6 @@ server <- function(input, output) {
     
   })
   
+  output$table <- renderDT(dta)
+  
 }
-

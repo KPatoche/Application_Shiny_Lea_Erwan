@@ -12,6 +12,17 @@ library(tidyverse)
 library(maps)
 library(readr)
 library(RColorBrewer)
+library(tidyverse)
+library(maps)
+library(readr)
+library(RColorBrewer)
+library(sf)
+library(Factoshiny)
+library(ggrepel)
+library(readxl)
+library(corrplot)
+library(DT)
+
 
 
 # Run the application 

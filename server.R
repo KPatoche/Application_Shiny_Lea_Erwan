@@ -24,4 +24,33 @@ server <- function(input, output) {
   
   output$table <- renderDT(dta)
   
+  output$hist <- renderPlot({
+    dta %>%
+      ggplot(aes(x = tx_pauvrete, 
+                 y = as.factor(année_publication),
+                 fill = as.factor(année_publication))) +
+      geom_density_ridges(alpha = 0.6) +
+      theme_minimal()
+  })
+  
+  output$box<- renderPlot({
+    dta %>%
+      mutate(année_publication = as.factor(dta$année_publication)) %>% 
+      ggplot(aes(x=année_publication,y=tx_pauvrete,fill=année_publication))+
+      geom_boxplot()+
+      geom_jitter()+
+      theme_minimal()
+  })
+  
+  
+  output$lines<- renderPlot({
+    dta %>%
+      mutate(année_publication = as.factor(dta$année_publication)) %>% 
+      group_by(année_publication) %>% 
+      summarise(mean_pauvrete = mean(tx_pauvrete,na.rm=T)) %>% 
+      ggplot(aes(x=année_publication,y=mean_pauvrete))+
+      geom_point()+
+      theme_minimal()
+  })
 }
+

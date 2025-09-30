@@ -51,6 +51,8 @@ dta <- dta %>%
   mutate(tx_pauvrete = ifelse(année_publication==2021,pauvrete_2021,tx_pauvrete)) %>% 
   select(-pauvrete_2021)
   
+dta <- dta %>% 
+  filter(!(code_departement %in% c("971","972","973","974")))
 
 #Fusion données sociales et carte
 france_dep_data <- left_join(france_dep,dta,by=join_by(nom_departement))
@@ -118,3 +120,11 @@ truc <- dta[5:31]
 cor_matrix <- cor(truc[ , -c(1,26,27)], use = "pairwise.complete.obs", method = "pearson")
 
 corrplot(cor_matrix)
+
+
+dta %>% 
+  filter(année_publication %in% c(2019,2020)) %>% 
+  ggplot(aes(x=as.integer(code_departement),y=tx_pauvrete,col=année_publication))+
+  geom_point()
+
+  

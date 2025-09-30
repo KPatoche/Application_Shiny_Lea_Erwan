@@ -33,8 +33,6 @@ ui <- navbarPage("Pavillon'R",
                  
                  # ---- Onglet 4 ----
                  tabPanel("Information",
-                          fluidPage(
                             DTOutput("table")
                           )
                  )
-)

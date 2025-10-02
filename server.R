@@ -22,7 +22,39 @@ server <- function(input, output) {
     
   })
   
-  output$table <- renderDT(dta)
+  output$table <- renderDT(
+    dta[,-c(31,32,33)],
+    filter = "top",
+    colnames=c("Année",
+               "Code du département",
+               "Département",
+               "Code région",
+               "Région",
+               "Nombre d'habitants",
+               "Densité de population au km²",
+               "Variation de la population sur 10 ans (en %)",
+               "Dont contribution du solde naturel (en %)",
+               "Dont contribution du solde migratoire (en %)",
+               "% population de moins de 20 ans",
+               "% population de 60 ans et plus",
+               "Taux de chômage au T4 (en %)",
+               "Taux de pauvreté (en %)",
+               "Nombre de logements",
+               "Nombre de résidences principales",
+               "Taux de logements sociaux (en %)",
+               "Taux de logements vacants (en %)",
+               "Taux de logements individuels (en %)",
+               "Moyenne annuelle de la construction neuve sur 10 ans",
+               "Construction",
+               "Parc social - Nombre de logements",
+               "Parc social - Logements mis en location",
+               "Parc social - Logements démolis",
+               "Parc social - Ventes à des personnes physiques",
+               "Parc social - Taux de logements vacants (en %)",
+               "Parc social - Taux de logements individuels (en %)",
+               "Parc social - Loyer moyen (en €/m²/mois)",
+               "Parc social - Âge moyen du parc (en années)",
+               "Parc social - Taux de logements énergivores (E,F,G) (en %)"))
   
   output$hist <- renderPlot({
     dta %>%

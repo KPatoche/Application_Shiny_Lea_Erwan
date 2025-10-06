@@ -85,7 +85,7 @@ server <- function(input, output) {
       theme_minimal()
   })
   
-  pal <- leaflet::colorNumeric(c("red","darkgreen"),domain=test$tx_pauvrete)
+  pal <- leaflet::colorFactor(palette=c("#1B9E77","#E6AB02","#7570B3","#D95F02"),domain=test$nom_region)
   
   output$map <- renderLeaflet({
     leaflet(test) %>%
@@ -93,23 +93,22 @@ server <- function(input, output) {
       addPolygons(
         layerId = ~nom_departement,
         label = ~nom_departement,
-        fillColor = ~pal(tx_pauvrete),  # couleur dynamique
+        fillColor = ~pal(nom_region),  # couleur dynamique
         color = "darkblue",
         weight = 1,
         fillOpacity = 0.7
-      ) %>%
-      addLegend(
-        pal = pal,
-        values = ~tx_pauvrete,
-        title = "Revenu médian",
-        position = "bottomright"
       )
   })
   
   observeEvent(input$map_shape_click, {
     click <- input$map_shape_click
-    
-    dept <- test %>% filter(nom_departement == click$id)
+    observe({
+      
+    req(input$date_slider)
+    dept <- test %>% 
+      filter(nom_departement == click$id, 
+             année_publication == input$date_slider)
+      
     bbox <- as.numeric(st_bbox(dept))
     
     leafletProxy("map") %>%
@@ -119,7 +118,18 @@ server <- function(input, output) {
         lng2 = bbox[3],
         lat2 = bbox[4]
     )
-  })
+    
+    output$info <- renderUI({
+      HTML(paste0(
+        "<b>Département :</b> ", str_to_sentence(dept$nom_departement), "<br>",
+        "<b>Région :</b> ", str_to_sentence(dept$nom_region), "<br>",
+        "<b>Taux de logement sociaux :</b> ", round(dept$tx_log_sociaux,1)," %", "<br>",
+        "<b>Taux de pauvreté :</b> ", round(dept$tx_pauvrete, 1), " %","<br>",
+        "<b>Taux de chômage :</b> ", round(dept$tx_chomage,1)," %", "<br>"
+      ))
+    })
+    })
 
+})
 }
 

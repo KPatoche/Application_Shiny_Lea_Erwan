@@ -15,6 +15,7 @@ library(corrplot)
 library(DT)
 library(ggridges)
 library(leaflet)
+library(viridis)
 
 source("ui.R")
 source("server.R")

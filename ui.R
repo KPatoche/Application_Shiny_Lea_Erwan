@@ -20,8 +20,30 @@ ui <- navbarPage("Pavillon'R",
                  # ---- Onglet 2 sans sidebar ----
                  tabPanel("Département",
                           fluidPage(
+                            tags$style("
+                                    #info {
+                                      position: absolute;
+                                      top: 140px;
+                                      right: 38px;
+                                      z-index: 1000;
+                                      background: rgba(100,180,180,0.9);
+                                      padding: 15px;
+                                      border-radius: 10px;
+                                      box-shadow: 0 0 8px rgba(0,0,0,0.2);
+                                      max-width: 300px;
+                                    }
+                                  "),
                             titlePanel("Carte interactive - Département"),
-                            leafletOutput("map", height = "90vh")
+                            leafletOutput("map", height = "80vh"),
+                            sliderInput(
+                              inputId = "date_slider",
+                              label = "Choisir la date",
+                              min = min(test$année_publication),
+                              max = max(test$année_publication),
+                              value = min(test$année_publication),
+                              step = 1
+                            ),
+                            uiOutput("info")
                           )
                  ),
                  

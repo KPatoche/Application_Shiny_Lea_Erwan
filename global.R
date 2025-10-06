@@ -24,7 +24,7 @@ dta <- read_delim("logements-et-logements-sociaux-dans-les-departements.csv",
 dta <- dta[,-31]
 #Rename des colonnes pour plus de clarté
 colnames(dta)[6:30] <- c("habitants","densite_km2","variation_10ans","sold_naturel","solde_migra","pop_inf20","pop_sup60",
-                         "tx_chomage_T4","tx_pauvrete","nb_logements","nb_res_princ","tx_log_sociaux","tx_log_vac",
+                         "tx_chomage","tx_pauvrete","nb_logements","nb_res_princ","tx_log_sociaux","tx_log_vac",
                          "tx_log_ind","moy_nvl_constru_10ans","nb_construction","social_nb_logements","social_location","social_demoli",
                          "social_ventes_physiques","social_vacants","social_individuel","social_loyer_m2","social_age_moyen","social_tx_energivores") 
 #Modification des données en accord avec les informations sur les données (données sur l'année N-2)
@@ -166,3 +166,11 @@ leaflet(test) %>%  # ton objet sf
 
 test <- st_set_crs(test, 4326)
 
+
+test_2 <- test %>% 
+  filter(année_publication==2018)
+
+
+test_2 %>% 
+  ggplot() +
+  geom_point(aes(x=tx_log_sociaux,y=tx_chomage))

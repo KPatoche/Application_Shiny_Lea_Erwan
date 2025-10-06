@@ -56,8 +56,13 @@ ui <- navbarPage("Pavillon'R",
                  
                  # ---- Onglet 4 ----
                  tabPanel("Table", icon = icon("table"),
-                            DTOutput("table")
-                          ),
+                          tabsetPanel(
+                            type="tabs",
+                            tabPanel("Données",DTOutput("table")),
+                            tabPanel("Résumé des données", verbatimTextOutput("summaryTable")
+                                   )
+                          )
+                 ),
                  
                  # ---- Onglet 5 ----
                  tabPanel("Info", icon=icon("info-circle"), 

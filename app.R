@@ -15,6 +15,7 @@ library(corrplot)
 library(DT)
 library(ggridges)
 library(leaflet)
+library(plotly)
 library(viridis)
 
 source("ui.R")

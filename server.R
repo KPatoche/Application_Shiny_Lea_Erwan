@@ -119,6 +119,43 @@ server <- function(input, output) {
       theme_minimal()
   })
   
+  output$parc_social_plot <- renderPlotly({
+    
+    if (input$niveau == "nom_departement") {
+      df_plot <- dta %>% 
+        group_by(nom_departement) %>% 
+        summarise(valeur_moy = mean(.data[[input$var_parc]], na.rm =TRUE)) %>% 
+        arrange(desc(valeur_moy))
+      
+      p <- ggplot(df_plot, aes(
+        x = valeur_moy,
+        y = reorder(nom_departement, valeur_moy)
+      )) +
+        geom_col(fill = "#3182bd") +
+        labs(
+          title = paste("Moyenne sur 6 ans"),
+          x = "Valeur moyenne",
+          y = "Département")
+      
+    } else if (input$niveau == "nom_region") {
+      df_plot <- dta %>% 
+        group_by(nom_region) %>% 
+        summarise(valeur_moy = mean(.data[[input$var_parc]], na.rm =TRUE)) %>%
+        arrange(desc(valeur_moy))
+      
+      p <- ggplot(df_plot, aes(
+        x = valeur_moy,
+        y = reorder(nom_region, valeur_moy)
+      )) +
+        geom_col(fill = "#3182bd") +
+        labs(
+          title = paste("Moyenne sur 6 ans"),
+          x = "Valeur moyenne",
+          y = "Région")
+    }
+    ggplotly(p)
+  })
+  
   pal <- leaflet::colorFactor(palette=c("#1B9E77","#E6AB02","#7570B3","#D95F02"),domain=test$nom_region)
   
   output$map <- renderLeaflet({

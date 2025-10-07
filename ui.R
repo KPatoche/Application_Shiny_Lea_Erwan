@@ -55,6 +55,27 @@ ui <- navbarPage("Pavillon'R",
                  ),
                  
                  # ---- Onglet 4 ----
+                 
+                 tabPanel("Parc social", icon = icon("building"),
+                          fluidPage(
+                            selectInput("var_parc","Choisir une variable du parc social :",
+                                        choices = c("Parc social - Nombre de logements" = "social_nb_logements",
+                                                    "Parc social - Logements mis en location"="social_location",
+                                                    "Parc social - Logements démolis"="social_demoli",
+                                                    "Parc social - Ventes à des personnes physiques"="social_ventes_physiques",
+                                                    "Parc social - Taux de logements vacants (en %)"="social_vacants",
+                                                    "Parc social - Taux de logements individuels (en %)"="social_individuel",
+                                                    "Parc social - Loyer moyen (en €/m²/mois)"="social_loyer_m2",
+                                                    "Parc social - Âge moyen du parc (en années)"="social_age_moyen",
+                                                    "Parc social - Taux de logements énergivores (E,F,G) (en %)"="social_tx_energivores")),
+                            radioButtons("niveau","Niveau d'analyse :",
+                                      choices = c("Département"="nom_departement", "Région"="nom_region"),
+                                      inline=TRUE),
+                            plotlyOutput("parc_social_plot", height = "800px", width = "1000px")
+                        )
+                 ),
+                 
+                 # ---- Onglet 5 ----
                  tabPanel("Table", icon = icon("table"),
                           tabsetPanel(
                             type="tabs",
@@ -64,7 +85,7 @@ ui <- navbarPage("Pavillon'R",
                           )
                  ),
                  
-                 # ---- Onglet 5 ----
+                 # ---- Onglet 6 ----
                  tabPanel("Info", icon=icon("info-circle"), 
                           fluidPage(h4(p("A propos du jeu de données")),
                                     h5(p("Dans le cadre de sa mission de financeur du logement social en France, la Caisse des Dépôts et Consignations, à travers la Banque des Territoires, suit et constitue des données utiles aux acteurs et observateurs cherchant à analyser les évolutions des territoires, l'activité de la construction et le secteur du logement social.")),

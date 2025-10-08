@@ -22,30 +22,62 @@ server <- function(input, output) {
     }
   }
   
+  output$intro_plot <- renderPlot({
+    
+    france_dep_data %>%
+      ggplot(aes(x=long,y=lat,group=group,fill=variation_loyer))+ 
+      geom_polygon(col="black",linewidth = 0.4) + 
+      theme_minimal() +
+      scale_fill_gradient2(low="darkgreen",
+                           mid="white",
+                           high="deeppink4",
+                           midpoint = 0,
+                           name = "Variation du loyer %",
+                           guide = guide_colorbar(
+                             title.position = "top",   # titre au-dessus
+                             title.hjust = 0.5,        # centre le titre
+                             barwidth = 2.5,            # largeur de la barre
+                             barheight = 16           # hauteur de la barre
+                           ))+
+      ggtitle("Variation du loyer moyen des logements sociaux par département entre 2016 et 2021")+
+      theme(legend.title = element_text("Variation loyer (%)"),
+            plot.title = element_text(hjust = 0.5, size = 16),
+            axis.title = element_blank(),
+            axis.text = element_blank(),
+            panel.grid.major = element_blank(),
+            panel.grid.minor = element_blank() 
+            )
+    
+  })
+  
   
 #Carte pour année 1  
   output$genMap_1 <- renderPlot({
     lims <- var_limits()
+    pals <- get_palette(input$var)
+    
     
     france_dep_data %>%
       filter(année_publication==input$annee[1]) %>% 
       ggplot(aes(x=long,y=lat,group=group,fill=.data[[input$var]]))+ 
       geom_polygon(col="white") + 
       theme_minimal() +
-      scale_fill_gradientn(colors = c("red","orange","gold","green","darkgreen"),
-                           limits=lims)
+      scale_fill_gradientn(colors = pals,
+                           limits=lims)+
+      theme(legend.position = "none")
     
   })
 #Carte pour année 2
   output$genMap_2 <- renderPlot({
     lims <- var_limits()
+    pals <- get_palette(input$var)
     
     france_dep_data %>%
       filter(année_publication==input$annee[2]) %>% 
       ggplot(aes(x=long,y=lat,group=group,fill=.data[[input$var]]))+ 
       geom_polygon(col="white") + 
       theme_minimal() +
-      scale_fill_gradientn(colors = c("red","orange","gold","green","darkgreen"),
+      scale_fill_gradientn(colors = pals,
                            limits=lims)
     
   })
@@ -240,6 +272,7 @@ server <- function(input, output) {
       HTML(paste0(
         "<b>Département :</b> ", str_to_sentence(dept$nom_departement), "<br>",
         "<b>Région :</b> ", str_to_sentence(dept$nom_region), "<br>",
+        "<b>Nombre d'habitants : </b>", dept$habitants,"<br>",
         "<b>Taux de logement sociaux :</b> ", round(dept$tx_log_sociaux,1)," %", "<br>",
         "<b>Taux de pauvreté :</b> ", round(dept$tx_pauvrete, 1), " %","<br>",
         "<b>Taux de chômage :</b> ", round(dept$tx_chomage,1)," %", "<br>"

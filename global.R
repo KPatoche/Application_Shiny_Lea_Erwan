@@ -73,21 +73,26 @@ dta <- dta %>%
   mutate(nb_logements = ifelse(année_publication==2021,logement_2021,nb_logements)) %>% 
   select(-logement_2021)
   
+dta$année_publication <- as.factor(dta$année_publication)
+
+dta <- dta %>% 
+  group_by(nom_departement) %>% 
+  mutate(variation_loyer = 100*(social_loyer_m2[année_publication==2021]-social_loyer_m2[année_publication==2016])/social_loyer_m2[année_publication==2016])
 
 #### Fusion données sociales et carte ####
 france_dep_data <- left_join(france_dep,dta,by=join_by(nom_departement))
 
 #Création de la carte
-france_dep_data %>% 
-  filter(année_publication==2017) %>% 
-  ggplot(aes(x=long,y=lat,group=group,fill=nom_departement))+ 
-  geom_polygon(col="white")
+# france_dep_data %>% 
+#   filter(année_publication==2017) %>% 
+#   ggplot(aes(x=long,y=lat,group=group,fill=nom_departement))+ 
+#   geom_polygon(col="white")
 
 #Exemple sur année 2017
-dta %>% 
-  filter(année_publication==2017) %>% 
-  ggplot(aes(x=tx_pauvrete,y=tx_log_sociaux,label=code_departement)) +
-  geom_point() + geom_text_repel()
+# dta %>% 
+#   filter(année_publication==2017) %>% 
+#   ggplot(aes(x=tx_pauvrete,y=tx_log_sociaux,label=code_departement)) +
+#   geom_point() + geom_text_repel()
 
 
 #Imporation carte des régions
@@ -118,10 +123,10 @@ france_dep_data <- left_join(regions,france_dep_data,by=join_by(nom_region))
 
 View(france_dep_data)
 
-france_dep_data %>% 
-  filter(année_publication==2023) %>% 
-  ggplot(aes(x=long,y=lat,group=group,fill=nom_region))+ 
-  geom_polygon(col="white")
+# france_dep_data %>% 
+#   filter(année_publication==2023) %>% 
+#   ggplot(aes(x=long,y=lat,group=group,fill=nom_region))+ 
+#   geom_polygon(col="white")
 
 france_dep_data$code <- NULL
 france_dep_data$subregion <- NULL
@@ -148,13 +153,6 @@ cor_matrix <- cor(truc[ , -c(1,26,27)], use = "pairwise.complete.obs", method = 
 
 corrplot(cor_matrix)
 
-
-dta %>% 
-  filter(année_publication %in% c(2019,2020)) %>% 
-  ggplot(aes(x=as.integer(code_departement),y=tx_pauvrete,col=année_publication))+
-  geom_point()
-
-
 # Transform to leaflet projection if needed
 
 conversion_leaflet <- function(df){
@@ -171,7 +169,6 @@ france_dep_leaf<- france_dep %>%
 
 test <- conversion_leaflet(france_dep_leaf)
 test <- st_as_sf(test)
-
 
 
 test <- left_join(test,dta,by=join_by(nom_departement))
@@ -205,7 +202,24 @@ test_2 <- test %>%
 #   ggplot()+
 #   geom_boxplot(aes(x=année_publication,y=tx_pauvrete))
 
-test %>% 
-  ggplot(aes(x=année_publication,y=social_tx_energivores,col=nom_departement))+
+test %>%
+  filter(nom_departement=="paris") %>% 
+  ggplot(aes(x = année_publication, 
+             y = sold_naturel, 
+             col = nom_departement,
+             group = nom_departement)) +
   geom_line()
 
+moy <- mean(france_dep_data$variation_loyer)
+france_dep_data %>%
+  ggplot(aes(x=long,y=lat,group=group,fill=variation_loyer))+ 
+  geom_polygon(col="black") + 
+  theme_minimal() +
+  scale_fill_gradient2(low="darkgreen",
+                       mid="white",
+                       high="deeppink4",
+                       midpoint = 0)+
+  ylab("Latitude")+
+  xlab("Longitude")+
+  ggtitle("Variation du loyer moyen des logements sociaux par département entre 2016 et 2021")+
+  theme(legend.title = element_text("Variation loyer (%)"))

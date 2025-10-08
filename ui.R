@@ -67,9 +67,13 @@ ui <- navbarPage("Pavillon'R",
                  
                  
                  # ---- Onglet 3 ----
-                 tabPanel("Démographie et dynamique",
+                 
+                 tabPanel("Démographie et dynamique", icon = icon("user"),
                           fluidPage(
-                            plotOutput("hist")
+                            selectInput("dep_plot_tx_acroissement","Choisir un département :",
+                                        choices = unique(dta$nom_departement)),
+                            plotOutput("plot_tx_accroissement"),
+                            plotOutput("plot_age_pop")
                           )
                  ),
                  

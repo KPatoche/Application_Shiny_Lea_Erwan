@@ -155,14 +155,46 @@ server <- function(input, output) {
     summary(dta_summary)
   })
   
-  output$hist <- renderPlot({
-    dta %>%
-      ggplot(aes(x = tx_pauvrete, 
-                 y = as.factor(année_publication),
-                 fill = as.factor(année_publication))) +
-      geom_density_ridges(alpha = 0.6) +
+  output$plot_tx_accroissement <- renderPlot({
+    df_plot <- dta %>%
+      filter(nom_departement %in% input$dep_plot_tx_acroissement) %>%
+      select(année_publication, valeur = taux_accroissement) %>% 
+      mutate(année_publication = factor(année_publication, levels = sort(unique(année_publication))))
+    
+    ggplot(df_plot, aes(x = année_publication, y = valeur, group = 1)) +
+      geom_line(color = "#3182bd", size = 1.2) +
+      geom_point(color = "#3182bd", size = 2) +
+      labs(x = "Années", y = "Taux d'accroissement", title = "Variation du taux d'accroissement par département entre 2016 et 2021" ) +
       theme_minimal()
   })
+  
+  output$plot_age_pop <- renderPlot({
+    
+    df_plot <- dta %>%
+      filter(nom_departement %in% input$dep_plot_tx_acroissement) %>%
+      summarise(
+        mean_inf20 = mean(pop_inf20, na.rm = TRUE),
+        mean_20_60 = mean(pop_20_60, na.rm = TRUE),
+        mean_sup60 = mean(pop_sup60, na.rm = TRUE)
+      )
+    
+    df_bar <- data.frame(
+      tranche = factor(c("<20 ans", "20-60 ans", ">60 ans"), levels = c("<20 ans", "20-60 ans", ">60 ans")),
+      population = c(
+        mean(df_plot$mean_inf20, na.rm = TRUE),
+        mean(df_plot$mean_20_60, na.rm = TRUE),
+        mean(df_plot$mean_sup60, na.rm = TRUE)
+      )
+    )
+    
+    ggplot(df_bar, aes(x = tranche, y = population, fill = tranche)) +
+      geom_bar(stat = "identity", show.legend = FALSE) +
+      scale_fill_manual(values = c("darkgreen", "gold", "deeppink4")) +
+      labs(x = NULL, y = "Population moyenne",
+           title = paste("Population moyenne par tranche d'âge -", input$dep_plot_tx_acroissement)) +
+      theme_minimal()
+  })
+    
   
   output$box<- renderPlot({
     dta %>%

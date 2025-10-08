@@ -224,6 +224,9 @@ france_dep_data %>%
   ggtitle("Variation du loyer moyen des logements sociaux par département entre 2016 et 2021")+
   theme(legend.title = element_text("Variation loyer (%)"))
 
+
+
+
 library(missMDA)
 pre_acp <-missMDA::imputePCA(dta[,-c(2,4,8,20,23,31:34)],quali.sup = c(1,2,3),quanti.sup=c(4:5,6:13))
 ACP_social <- PCA(pre_acp$completeObs,quali.sup = c(1,2,3),quanti.sup=c(4:5,6:13))
@@ -243,3 +246,11 @@ simul <- function(nbsimul,nind,nvar){
 simul(1000,576,12)
 
 plot.PCA(ACP_social,choix = "var")
+
+library(dplyr)
+
+dta <- dta %>%
+  mutate(taux_accroissement = sold_naturel + solde_migra)
+
+dta <- dta %>%
+  mutate(pop_20_60 = 100 - pop_inf20 - pop_sup60)

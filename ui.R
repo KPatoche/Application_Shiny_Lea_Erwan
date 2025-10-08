@@ -141,7 +141,31 @@ ui <- navbarPage("Pavillon'R",
                             type="tabs",
                             tabPanel("Tableau",DTOutput("table")),
                             tabPanel("Résumé des données", verbatimTextOutput("summaryTable")),
-                            tabPanel("Exploration")
+                            tabPanel("Exploration", icon = icon("chart-bar"),
+                                     sidebarLayout(
+                                       sidebarPanel(
+                                         width = 3,
+                                         selectInput("var_x", "Variable X :", 
+                                                     choices = colnames(france_dep_data)[10:34]),
+                                         selectInput("var_y", "Variable Y :", 
+                                                     choices = colnames(france_dep_data)[10:34])
+                                       ),
+                                       mainPanel(
+                                         fluidRow(
+                                           # Scatter plot bivarié
+                                           column(
+                                             width = 6,
+                                             plotOutput("bivariate_plot", height = "400px")
+                                           ),
+                                           # Matrice de corrélation
+                                           column(
+                                             width = 6,
+                                             plotOutput("correlation_plot", height = "400px")
+                                           )
+                                         )
+                                       )
+                                     )
+                            )
                           )
                  ),
                  

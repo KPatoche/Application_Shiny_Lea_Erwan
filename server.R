@@ -359,5 +359,21 @@ server <- function(input, output) {
     plot.PCA(ACP_social,choix = "var")
   })
     
+  
+  output$bivariate_plot <- renderPlot({
+    ggplot(france_dep_data, aes(x = .data[[input$var_x]], y = .data[[input$var_y]])) +
+      geom_point(alpha = 0.6, color = "#2C3E50") +
+      geom_smooth(method = "lm", se = FALSE, color = "#E74C3C") +
+      theme_minimal() +
+      labs(
+        x = input$var_x,
+        y = input$var_y,
+        title = paste("Relation entre", input$var_x, "et", input$var_y)
+      )
+  })
+  
+  output$correlation_plot <- renderPlot({
+    corrplot(cor_matrix,
+             tl.cex = 0.6)})
 }
 

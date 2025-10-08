@@ -151,7 +151,8 @@ corrplot(cor_matrix)
 truc <- dta[5:31]
 cor_matrix <- cor(truc[ , -c(1,26,27)], use = "pairwise.complete.obs", method = "pearson")
 
-corrplot(cor_matrix)
+corrplot(cor_matrix,
+         tl.cex = 0.6)
 
 # Transform to leaflet projection if needed
 

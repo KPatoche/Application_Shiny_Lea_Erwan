@@ -185,37 +185,51 @@ server <- function(input, output) {
     if (input$niveau == "nom_departement") {
       df_plot <- dta %>% 
         group_by(nom_departement) %>% 
-        summarise(valeur_moy = mean(.data[[input$var_parc]], na.rm =TRUE)) %>% 
-        arrange(desc(valeur_moy))
+        summarise(valeur_moy = mean(.data[[input$var_parc]], na.rm = TRUE))
       
       p <- ggplot(df_plot, aes(
         x = valeur_moy,
-        y = reorder(nom_departement, valeur_moy)
+        y = reorder(nom_departement, valeur_moy),
+        text = paste(nom_departement, ":", round(valeur_moy, 1))
       )) +
         geom_col(fill = "#3182bd") +
         labs(
-          title = paste("Moyenne sur 6 ans"),
+          title = "Moyenne entre 2016 et 2021",
           x = "Valeur moyenne",
-          y = "Département")
+          y = "Département"
+        ) +
+        scale_x_continuous(
+          expand = c(0, 0),
+          limits = c(0, NA),
+          labels = scales::label_number(accuracy = 0.1, big.mark = " ")
+        )
       
     } else if (input$niveau == "nom_region") {
       df_plot <- dta %>% 
         group_by(nom_region) %>% 
-        summarise(valeur_moy = mean(.data[[input$var_parc]], na.rm =TRUE)) %>%
-        arrange(desc(valeur_moy))
+        summarise(valeur_moy = mean(.data[[input$var_parc]], na.rm = TRUE))
       
       p <- ggplot(df_plot, aes(
         x = valeur_moy,
-        y = reorder(nom_region, valeur_moy)
+        y = reorder(nom_region, valeur_moy),
+        text = paste(nom_region, ":", round(valeur_moy, 1))
       )) +
         geom_col(fill = "#3182bd") +
         labs(
-          title = paste("Moyenne sur 6 ans"),
+          title = "Moyenne entre 2016 et 2021",
           x = "Valeur moyenne",
-          y = "Région")
+          y = "Région"
+        ) +
+        scale_x_continuous(
+          expand = c(0, 0),
+          limits = c(0, NA),
+          labels = scales::label_number(accuracy = 0.1, big.mark = " ")
+        )
     }
-    ggplotly(p)
+    
+    ggplotly(p, tooltip = "text")
   })
+  
   
   pal <- leaflet::colorFactor(palette=c("#1B9E77","#E6AB02","#7570B3","#D95F02"),domain=test$nom_region)
 

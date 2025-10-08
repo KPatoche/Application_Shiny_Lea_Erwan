@@ -18,6 +18,8 @@ library(leaflet)
 library(plotly)
 library(viridis)
 library(shinythemes)
+library(scales)
+
 
 source("ui.R")
 source("server.R")

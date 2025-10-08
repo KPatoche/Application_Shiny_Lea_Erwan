@@ -1,7 +1,7 @@
 ui <- navbarPage("Pavillon'R",
                  
                  # ---- Onglet 1 avec sidebar ----
-                 tabPanel("Graph intro",
+                 tabPanel("Introduction", icon = icon("file-alt"),
                           sidebarLayout(
                             sidebarPanel(width=2,
                                          selectInput("var", "Que voulez-vous voir sur cette carte?", 
@@ -89,12 +89,12 @@ ui <- navbarPage("Pavillon'R",
                  ),
                  
                  # ---- Onglet 5 ----
-                 tabPanel("Table", icon = icon("table"),
+                 tabPanel("Données", icon = icon("table"),
                           tabsetPanel(
                             type="tabs",
-                            tabPanel("Données",DTOutput("table")),
-                            tabPanel("Résumé des données", verbatimTextOutput("summaryTable")
-                                   )
+                            tabPanel("Tableau",DTOutput("table")),
+                            tabPanel("Résumé des données", verbatimTextOutput("summaryTable")),
+                            tabPanel("Exploration")
                           )
                  ),
                  

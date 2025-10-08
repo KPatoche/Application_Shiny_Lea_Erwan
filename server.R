@@ -28,24 +28,28 @@ server <- function(input, output) {
       ggplot(aes(x=long,y=lat,group=group,fill=variation_loyer))+ 
       geom_polygon(col="black",linewidth = 0.4) + 
       theme_minimal() +
-      scale_fill_gradient2(low="darkgreen",
+      labs(caption = "Source : INSEE, SDES et CDC")+
+      scale_fill_gradient2(low="royalblue2",
                            mid="white",
-                           high="deeppink4",
+                           high="orangered1",
                            midpoint = 0,
                            name = "Variation du loyer %",
                            guide = guide_colorbar(
-                             title.position = "top",   # titre au-dessus
-                             title.hjust = 0.5,        # centre le titre
-                             barwidth = 2.5,            # largeur de la barre
-                             barheight = 16           # hauteur de la barre
+                             title.position = "top",
+                             barwidth = 2.5,           
+                             barheight = 16,
+                             frame.colour = "black"
                            ))+
-      ggtitle("Variation du loyer moyen des logements sociaux par département entre 2016 et 2021")+
-      theme(legend.title = element_text("Variation loyer (%)"),
-            plot.title = element_text(hjust = 0.5, size = 16),
+      ggtitle("Variation du loyer moyen des logements sociaux par département entre 2016 et 2021",subtitle = expression("La variation se fait sur le loyer en m"^2))+
+      theme(legend.title = element_text(face = "bold",hjust=0.5,size = 14),
+            legend.text = element_text(size = 14),
+            plot.title = element_text(face = "bold", size = 16),
+            plot.subtitle = element_text(face = "italic", size = 14),
             axis.title = element_blank(),
             axis.text = element_blank(),
             panel.grid.major = element_blank(),
-            panel.grid.minor = element_blank() 
+            panel.grid.minor = element_blank(),
+            plot.caption = element_text(face="italic",size=12)
             )
     
   })
@@ -282,5 +286,14 @@ server <- function(input, output) {
     })
 
 })
+  
+  output$ACP_ind <- renderPlot({
+    plot.PCA(ACP_social,choix = "ind")
+  })
+  
+  output$ACP_var <- renderPlot({
+    plot.PCA(ACP_social,choix = "var")
+  })
+    
 }
 

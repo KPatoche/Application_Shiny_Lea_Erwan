@@ -223,3 +223,23 @@ france_dep_data %>%
   xlab("Longitude")+
   ggtitle("Variation du loyer moyen des logements sociaux par département entre 2016 et 2021")+
   theme(legend.title = element_text("Variation loyer (%)"))
+
+library(missMDA)
+pre_acp <-missMDA::imputePCA(dta[,-c(2,4,8,20,23,31:34)],quali.sup = c(1,2,3),quanti.sup=c(4:5,6:13))
+ACP_social <- PCA(pre_acp$completeObs,quali.sup = c(1,2,3),quanti.sup=c(4:5,6:13))
+
+plot.PCA(ACP_social,choix = "ind",select = "quali")
+
+simul <- function(nbsimul,nind,nvar){
+  res <- rep(0,times = nbsimul)
+  for (i in 1:nbsimul){
+    dta <- as.data.frame(matrix(rnorm(nind*nvar),nrow=nind))
+    ACP <- PCA(dta,graph = FALSE)
+    res[i] <- ACP$eig[2,3]
+  }
+  quant <- quantile(res,probs=c(0.95))
+  return(quant)
+}
+simul(1000,576,12)
+
+plot.PCA(ACP_social,choix = "var")

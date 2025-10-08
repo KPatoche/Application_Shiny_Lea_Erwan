@@ -94,6 +94,13 @@ ui <- navbarPage("Pavillon'R",
                         )
                  ),
                  
+                 tabPanel("ACP", icon = icon("table"),
+                            fluidRow(
+                              column(6, plotOutput("ACP_ind")),
+                              column(6, plotOutput("ACP_var"))
+                            )
+                          ),
+                 
                  # ---- Onglet 5 ----
                  tabPanel("Données", icon = icon("table"),
                           tabsetPanel(

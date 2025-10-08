@@ -39,6 +39,11 @@ dta <- dta %>%
   arrange(code_departement,desc(année_publication)) %>% 
   mutate(tx_pauvrete = lag(tx_pauvrete))
 
+#Decalage du nombre de logement total (N-3)
+dta <- dta %>% 
+  arrange(code_departement,desc(année_publication)) %>% 
+  mutate(nb_logements = lag(nb_logements))
+
 #### Importation des taux de pauvrete en 2021 ####
 Taux_pauvrete_2021 <- read_excel("Taux_pauvrete_2021.xlsx")
 
@@ -46,6 +51,11 @@ Taux_pauvrete_2021$Departement <- iconv(Taux_pauvrete_2021$Departement,to="ASCII
 Taux_pauvrete_2021$Departement <- str_remove(Taux_pauvrete_2021$Departement,"'")
 Taux_pauvrete_2021$Departement <- tolower(Taux_pauvrete_2021$Departement)
 colnames(Taux_pauvrete_2021)[2:3] <- c("nom_departement","pauvrete_2021")
+
+#### Importation nombre de logements total en 2021 ####
+Logement_2021 <- read_excel("departement_2021_nb_logements.xlsx")
+colnames(Logement_2021) <- c("code_departement","logement_2021")
+
 
 #Ajout des tx de pauvrete 2021 au jeu de données global
 dta <- dta %>% 
@@ -55,6 +65,14 @@ dta <- dta %>%
   
 dta <- dta %>% 
   filter(!(code_departement %in% c("971","972","973","974")))
+
+#Ajout des logements 2021 
+
+dta <- dta %>% 
+  left_join(Logement_2021) %>% 
+  mutate(nb_logements = ifelse(année_publication==2021,logement_2021,nb_logements)) %>% 
+  select(-logement_2021)
+  
 
 #### Fusion données sociales et carte ####
 france_dep_data <- left_join(france_dep,dta,by=join_by(nom_departement))
@@ -186,3 +204,8 @@ test_2 <- test %>%
 # test %>% 
 #   ggplot()+
 #   geom_boxplot(aes(x=année_publication,y=tx_pauvrete))
+
+test %>% 
+  ggplot(aes(x=année_publication,y=social_tx_energivores,col=nom_departement))+
+  geom_line()
+

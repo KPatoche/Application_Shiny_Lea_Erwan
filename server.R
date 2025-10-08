@@ -1,27 +1,55 @@
 # Define server logic required to draw a histogram
 server <- function(input, output) {
+ 
   
+#Légende en commun pour les 2 maps
+  
+  var_limits <- reactive({
+    df <- france_dep_data %>%
+      filter(année_publication %in% input$annee) %>%
+      pull(.data[[input$var]])
+    
+    c(min(df, na.rm = TRUE), max(df, na.rm = TRUE))
+  })
+
+  #Inversion de la palette selon la variable
+  get_palette <- function(var_name) {
+    if (var_name %in% c("tx_chomage","tx_pauvrete","social_demoli","social_vacants","social_tx_energivores","social_age_moyen",
+                        "social_loyer_m2")) {  
+      return(c("darkgreen","green","gold","orange","red"))
+    } else {
+      return(c("red","orange","gold","green","darkgreen")) 
+    }
+  }
+  
+  
+#Carte pour année 1  
   output$genMap_1 <- renderPlot({
+    lims <- var_limits()
     
     france_dep_data %>%
       filter(année_publication==input$annee[1]) %>% 
       ggplot(aes(x=long,y=lat,group=group,fill=.data[[input$var]]))+ 
       geom_polygon(col="white") + 
       theme_minimal() +
-      scale_fill_gradientn(colors = c("darkred","red","gray","blue","darkblue"))
+      scale_fill_gradientn(colors = c("red","orange","gold","green","darkgreen"),
+                           limits=lims)
     
   })
-  
+#Carte pour année 2
   output$genMap_2 <- renderPlot({
+    lims <- var_limits()
+    
     france_dep_data %>%
       filter(année_publication==input$annee[2]) %>% 
       ggplot(aes(x=long,y=lat,group=group,fill=.data[[input$var]]))+ 
       geom_polygon(col="white") + 
       theme_minimal() +
-      scale_fill_gradientn(colors = c("darkred","red","gray","blue","darkblue"))
+      scale_fill_gradientn(colors = c("red","orange","gold","green","darkgreen"),
+                           limits=lims)
     
   })
-  
+
   output$table <- renderDT(
     dta[,-c(31,32,33)],
     filter = "top",
@@ -55,6 +83,7 @@ server <- function(input, output) {
                "Parc social - Loyer moyen (en €/m²/mois)",
                "Parc social - Âge moyen du parc (en années)",
                "Parc social - Taux de logements énergivores (E,F,G) (en %)"))
+  
   output$summaryTable <- renderPrint({
     dta_summary <- dta[,-c(31,32,33)]
     colnames(dta_summary) <- c("Année",
@@ -157,10 +186,12 @@ server <- function(input, output) {
   })
   
   pal <- leaflet::colorFactor(palette=c("#1B9E77","#E6AB02","#7570B3","#D95F02"),domain=test$nom_region)
-  
+
+#Carte intéractive par département pour avoir une idée des indicateurs pour chaque département 
   output$map <- renderLeaflet({
     leaflet(test) %>%
       addTiles() %>%
+      setView(lng = 2.3522, lat = 47.1566, zoom = 6) %>%  # Exemple: Paris
       addPolygons(
         layerId = ~nom_departement,
         label = ~nom_departement,
@@ -171,6 +202,7 @@ server <- function(input, output) {
       )
   })
   
+  #Fonction de clic sur la carte
   observeEvent(input$map_shape_click, {
     click <- input$map_shape_click
     observe({
@@ -189,7 +221,8 @@ server <- function(input, output) {
         lng2 = bbox[3],
         lat2 = bbox[4]
     )
-    
+  
+  #Bulle d'information quand on clique sur un département
     output$info <- renderUI({
       HTML(paste0(
         "<b>Département :</b> ", str_to_sentence(dept$nom_departement), "<br>",

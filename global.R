@@ -108,15 +108,22 @@ france_dep_data %>%
 france_dep_data$code <- NULL
 france_dep_data$subregion <- NULL
 
-truc <- dta %>%
+dta_moy <- dta %>%
   group_by(nom_departement) %>% 
   summarise(across(5:31, mean, na.rm = TRUE))
 
 
+labels <- c("Nombre d'habitants","Densité (km2)","Variation population sur 10 ans","Solde naturel","Solde migratoire",
+            "Pourcentage population < 20ans","Pourcentage population > 60 ans","Taux de chômage","Taux de pauvreté","Nombre de logements",
+            "Nombre résidences principales","Taux de logements sociaux","Taux de logements vacants","Taux de logements individuels",
+            "Nombre construction moyenne sur 10 ans","Nombre de construction","Nombre de logements sociaux","Location en logements sociaux",
+            "Logements sociaux démolis","Nombre de logements sociaux vendus","Nombre logements sociaux vacants","Nombre logements sociaux individuels",
+            "Loyer logement sociaux (m2)","Age moyen logements sociaux","Taux de logements sociaux énergivores")
 
-cor_matrix <- cor(truc[ , -c(1,27,28)], use = "pairwise.complete.obs", method = "pearson")
+
+cor_matrix <- cor(dta_moy[ , -c(1,27,28)], use = "pairwise.complete.obs", method = "pearson")
 cor_matrix
-
+corrplot(cor_matrix)
 
 truc <- dta[5:31]
 cor_matrix <- cor(truc[ , -c(1,26,27)], use = "pairwise.complete.obs", method = "pearson")
@@ -167,10 +174,15 @@ leaflet(test) %>%  # ton objet sf
 test <- st_set_crs(test, 4326)
 
 
-test_2 <- test %>% 
+test_2 <- test %>%
   filter(année_publication==2018)
 
-
-test_2 %>% 
-  ggplot() +
-  geom_point(aes(x=tx_log_sociaux,y=tx_chomage))
+# test %>%
+#   ggplot() +
+#   geom_point(aes(x=tx_log_sociaux,y=tx_pauvrete,colour = année_publication))+
+#   geom_smooth(aes(x=tx_pauvrete,y=tx_chomage,colour = année_publication))
+# 
+# 
+# test %>% 
+#   ggplot()+
+#   geom_boxplot(aes(x=année_publication,y=tx_pauvrete))

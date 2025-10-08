@@ -5,7 +5,7 @@ ui <- navbarPage("Pavillon'R",
                           sidebarLayout(
                             sidebarPanel(width=2,
                                          selectInput("var", "Que voulez-vous voir sur cette carte?", 
-                                                     colnames(france_dep_data)[11:35]),
+                                                     choices = setNames(colnames(france_dep_data)[10:34],labels)),
                                          sliderInput("annee","Années :", min=2016, max=2021, value=c(2016,2021))
                             ),
                             mainPanel(
@@ -18,39 +18,52 @@ ui <- navbarPage("Pavillon'R",
                  ),
                  
                  # ---- Onglet 2 sans sidebar ----
-                 tabPanel("Département",
-                          fluidPage(
-                            tags$style("
-                                    #info {
-                                      position: absolute;
-                                      top: 140px;
-                                      right: 38px;
-                                      z-index: 1000;
-                                      background: rgba(100,180,180,0.9);
-                                      padding: 15px;
-                                      border-radius: 10px;
-                                      box-shadow: 0 0 8px rgba(0,0,0,0.2);
-                                      max-width: 300px;
-                                    }
-                                  "),
-                            titlePanel("Carte interactive - Département"),
-                            leafletOutput("map", height = "80vh"),
-                            sliderInput(
-                              inputId = "date_slider",
-                              label = "Choisir la date",
-                              min = min(test$année_publication),
-                              max = max(test$année_publication),
-                              value = min(test$année_publication),
-                              step = 1
-                            ),
-                            uiOutput("info")
-                          )
+                 tabPanel(
+                   "Vue d'ensemble",
+                   fluidPage(
+                     tags$style("
+                          #info {
+                            position: absolute;
+                            top: 100px;
+                            right: 30px;
+                            z-index: 1000;
+                            background: rgba(100,180,180,0.9);
+                            padding: 15px;
+                            border-radius: 10px;
+                            box-shadow: 0 0 8px rgba(0,0,0,0.2);
+                            max-width: 300px;
+                          }
+                        "),
+                     
+                     # On place le slider dans un sidebarLayout
+                     sidebarLayout(
+                       sidebarPanel(
+                         sliderInput(
+                           inputId = "date_slider",
+                           label = "Choisir la date",
+                           min = min(as.numeric(as.character(test$année_publication))),
+                           max = max(as.numeric(as.character(test$année_publication))),
+                           value = min(as.numeric(as.character(test$année_publication))),
+                           step = 1
+                         ),
+                         width = 2
+                       ),
+                       
+                       mainPanel(
+                         titlePanel("Carte interactive - Département"),
+                         leafletOutput("map", height = "80vh"),
+                         uiOutput("info"),
+                         width = 10
+                       )
+                     )
+                   )
                  ),
                  
+                 
                  # ---- Onglet 3 ----
-                 tabPanel("Analyse factorielle + classif",
+                 tabPanel("Démographie et dynamique",
                           fluidPage(
-                            plotOutput("genMap_1")
+                            plotOutput("hist")
                           )
                  ),
                  
@@ -66,6 +79,9 @@ ui <- navbarPage("Pavillon'R",
                  
                  # ---- Onglet 5 ----
                  tabPanel("Info", icon=icon("info-circle"), 
+                          tabsetPanel(
+                            type="tabs",
+                            tabPanel("À propos",
                           fluidPage(h4(p("A propos du jeu de données")),
                                     h5(p("Dans le cadre de sa mission de financeur du logement social en France, la Caisse des Dépôts et Consignations, à travers la Banque des Territoires, suit et constitue des données utiles aux acteurs et observateurs cherchant à analyser les évolutions des territoires, l'activité de la construction et le secteur du logement social.")),
                                     h5(p("Le jeu de données mis à disposition présente, pour les départements métropolitains et les DOM, des indicateurs de contexte sur le parc de logement et des informations sur le parc de logement social.")),
@@ -75,6 +91,23 @@ ui <- navbarPage("Pavillon'R",
                                     h5(p("Ce jeu de données n’est plus mis à jour à partir du 01/01/2025.")),
                                     h5(p("Le jeu de données pour cette application Shiny est disponible", a("sur ce site", href = "https://www.data.gouv.fr/datasets/logements-et-logements-sociaux-dans-les-departements-1/"),"."))
                                     )
-                 )
+                                  ),
+                            
+                          tabPanel("Définitions",
+                            fluidPage(h4(p("Définitions des variables")),
+                                      
+                                      strong("Logement social:"),
+                                      p("Logement construit avec l’aide de l’État et qui est soumis à des règles de construction, de gestion et d’attributions précises. Les loyers sont également réglementés et l’accès au logement conditionné à des ressources maximales."),
+                                      p("Il existe 3 catégories de logements sociaux : PLAI pour les plus précaires, PLUS correspondant aux HLM et PLS dans les zones tendues"),
+                                      br(),
+                                      
+                                      strong("Taux de pauvreté:"),
+                                      p("Pourcentage de la population vivant en dessous du seuil de pauvreté national. En France, il est fixé à 60% du revenu médian."),
+                                      br()
+                                      
+                                      )
+                          )
+                          )
+                 
 )
-
+)

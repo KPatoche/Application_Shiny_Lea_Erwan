@@ -90,8 +90,25 @@ ui <- navbarPage("Pavillon'R",
                             radioButtons("niveau","Niveau d'analyse :",
                                       choices = c("Département"="nom_departement", "Région"="nom_region"),
                                       inline=TRUE),
-                            plotlyOutput("parc_social_plot", height = "800px", width = "1000px")
-                        )
+                            plotlyOutput("parc_social_plot", height = "800px", width = "1000px"),
+                            
+                            hr(),
+                            
+                            selectInput("dep_graph2","Choisir un département :",
+                                        choices = unique(dta$nom_departement)),
+                            
+                            selectInput("var_graph2","Choisir une variable du parc social :",
+                                        choices = c("Parc social - Nombre de logements" = "social_nb_logements",
+                                                    "Parc social - Logements mis en location"="social_location",
+                                                    "Parc social - Logements démolis"="social_demoli",
+                                                    "Parc social - Ventes à des personnes physiques"="social_ventes_physiques",
+                                                    "Parc social - Taux de logements vacants (en %)"="social_vacants",
+                                                    "Parc social - Taux de logements individuels (en %)"="social_individuel",
+                                                    "Parc social - Loyer moyen (en €/m²/mois)"="social_loyer_m2",
+                                                    "Parc social - Âge moyen du parc (en années)"="social_age_moyen",
+                                                    "Parc social - Taux de logements énergivores (E,F,G) (en %)"="social_tx_energivores")),
+                            plotOutput("parc_social_graph2")
+                          )
                  ),
                  
                  tabPanel("ACP", icon = icon("table"),

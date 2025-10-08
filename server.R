@@ -199,8 +199,8 @@ server <- function(input, output) {
         geom_col(fill = "#3182bd") +
         labs(
           title = "Moyenne entre 2016 et 2021",
-          x = "Valeur moyenne",
-          y = "Département"
+          x = NULL,
+          y = NULL
         ) +
         scale_x_continuous(
           expand = c(0, 0),
@@ -221,8 +221,8 @@ server <- function(input, output) {
         geom_col(fill = "#3182bd") +
         labs(
           title = "Moyenne entre 2016 et 2021",
-          x = "Valeur moyenne",
-          y = "Région"
+          x = NULL,
+          y = NULL
         ) +
         scale_x_continuous(
           expand = c(0, 0),
@@ -234,6 +234,19 @@ server <- function(input, output) {
     ggplotly(p, tooltip = "text")
   })
   
+  output$parc_social_graph2 <- renderPlot({
+    
+    df_plot <- dta %>%
+      filter(nom_departement %in% input$dep_graph2) %>%
+      select(année_publication, valeur = all_of(input$var_graph2)) %>% 
+      mutate(année_publication = factor(année_publication, levels = sort(unique(année_publication))))
+    
+    ggplot(df_plot, aes(x = année_publication, y = valeur, group = 1)) +
+      geom_line(color = "#3182bd", size = 1.2) +
+      geom_point(color = "#3182bd", size = 2) +
+      labs(x = NULL, y = NULL, title = NULL) +
+      theme_minimal()
+  })
   
   pal <- leaflet::colorFactor(palette=c("#1B9E77","#E6AB02","#7570B3","#D95F02"),domain=test$nom_region)
 

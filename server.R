@@ -16,9 +16,9 @@ server <- function(input, output) {
   get_palette <- function(var_name) {
     if (var_name %in% c("tx_chomage","tx_pauvrete","social_demoli","social_vacants","social_tx_energivores","social_age_moyen",
                         "social_loyer_m2")) {  
-      return(c("darkgreen","green","gold","orange","red"))
+      return(c("royalblue2","white","orangered1"))
     } else {
-      return(c("red","orange","gold","green","darkgreen")) 
+      return(c("orangered1","white","royalblue2")) 
     }
   }
   
@@ -64,7 +64,7 @@ server <- function(input, output) {
     france_dep_data %>%
       filter(année_publication==input$annee[1]) %>% 
       ggplot(aes(x=long,y=lat,group=group,fill=.data[[input$var]]))+ 
-      geom_polygon(col="white") + 
+      geom_polygon(col="black") + 
       theme_minimal() +
       scale_fill_gradientn(colors = pals,
                            limits=lims)+
@@ -75,15 +75,34 @@ server <- function(input, output) {
   output$genMap_2 <- renderPlot({
     lims <- var_limits()
     pals <- get_palette(input$var)
+    legend_title <- labels[which(colnames(france_dep_data)[10:34] == input$var)]
+    
+    if (grepl("Parc social", legend_title, ignore.case = TRUE)) {
+      legend_title <- sub("Parc social", "PS", legend_title, ignore.case = TRUE)
+    }
     
     france_dep_data %>%
       filter(année_publication==input$annee[2]) %>% 
       ggplot(aes(x=long,y=lat,group=group,fill=.data[[input$var]]))+ 
-      geom_polygon(col="white") + 
+      geom_polygon(col="black") + 
       theme_minimal() +
       scale_fill_gradientn(colors = pals,
-                           limits=lims)
+                           limits=lims)+
+      labs(fill=legend_title) +
+      theme(legend.position = "right",
+            legend.box.margin = margin(0, 20, 0, 0),
+            legend.key.width = unit(0.6, "cm"),  
+            legend.text = element_text(size = 9), 
+            legend.title = element_text(size = 10))
     
+  })
+  
+  output$annee_map_1 <- renderText({
+    paste("Année :", input$annee[1])
+  })
+  
+  output$annee_map_2 <- renderText({
+    paste("Année :", input$annee[2])
   })
 
   output$table <- renderDT(

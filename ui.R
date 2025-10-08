@@ -16,8 +16,21 @@ ui <- navbarPage("Pavillon'R",
                                 )
                               ),
                               fluidRow(
-                                column(6, plotOutput("genMap_1")),
-                                column(6, plotOutput("genMap_2"))
+                                column(12, align = "center",
+                                       h3("Évolution de la variable sélectionnée par département")
+                                )
+                              ),
+                              fluidRow(
+                                column(6, align = "center", plotOutput("genMap_1",height="600px",width = "100%")),
+                                column(6, align = "center", plotOutput("genMap_2",height="600px",width = "100%"))
+                              ),
+                              fluidRow(
+                                column(6, align = "center", 
+                                       textOutput("annee_map_1")  # année pour la 1re carte
+                                ),
+                                column(6, align = "center", 
+                                       textOutput("annee_map_2")  # année pour la 2e carte
+                                )
                               )
                             )
                           )

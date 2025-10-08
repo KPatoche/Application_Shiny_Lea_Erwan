@@ -17,6 +17,7 @@ library(ggridges)
 library(leaflet)
 library(plotly)
 library(viridis)
+library(shinythemes)
 
 source("ui.R")
 source("server.R")

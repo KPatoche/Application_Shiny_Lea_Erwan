@@ -1,4 +1,5 @@
 ui <- navbarPage("Pavillon'R",
+                 theme=shinytheme("united"),
                  
                  # ---- Onglet 1 avec sidebar ----
                  tabPanel("Graph intro",
@@ -9,6 +10,11 @@ ui <- navbarPage("Pavillon'R",
                                          sliderInput("annee","Années :", min=2016, max=2021, value=c(2016,2021))
                             ),
                             mainPanel(
+                              fluidRow(
+                                column(width = 12, align = "center",   # centre le contenu
+                                       plotOutput("intro_plot", height = "600px", width = "90%")
+                                )
+                              ),
                               fluidRow(
                                 column(6, plotOutput("genMap_1")),
                                 column(6, plotOutput("genMap_2"))

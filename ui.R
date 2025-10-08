@@ -84,7 +84,9 @@ ui <- navbarPage("Pavillon'R",
                             radioButtons("niveau","Niveau d'analyse :",
                                       choices = c("Département"="nom_departement", "Région"="nom_region"),
                                       inline=TRUE),
-                            plotlyOutput("parc_social_plot", height = "800px", width = "1000px")
+                            plotlyOutput("parc_social_plot", height = "800px", width = "1000px"),
+                            
+                            hr(),
                         )
                  ),
                  

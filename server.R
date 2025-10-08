@@ -163,8 +163,8 @@ server <- function(input, output) {
         geom_col(fill = "#3182bd") +
         labs(
           title = "Moyenne entre 2016 et 2021",
-          x = "Valeur moyenne",
-          y = "Département"
+          x = NULL,
+          y = NULL
         ) +
         scale_x_continuous(
           expand = c(0, 0),
@@ -185,8 +185,8 @@ server <- function(input, output) {
         geom_col(fill = "#3182bd") +
         labs(
           title = "Moyenne entre 2016 et 2021",
-          x = "Valeur moyenne",
-          y = "Région"
+          x = NULL,
+          y = NULL
         ) +
         scale_x_continuous(
           expand = c(0, 0),
@@ -197,7 +197,6 @@ server <- function(input, output) {
     
     ggplotly(p, tooltip = "text")
   })
-  
   
   pal <- leaflet::colorFactor(palette=c("#1B9E77","#E6AB02","#7570B3","#D95F02"),domain=test$nom_region)
 

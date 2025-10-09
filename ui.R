@@ -14,7 +14,7 @@ ui <- navbarPage("Pavillon'R",
                            selectInput(
                              "var",
                              "Que voulez-vous voir sur cette carte ?", 
-                             choices = setNames(colnames(france_dep_data)[10:34], labels)
+                             choices = setNames(colnames(france_dep_data)[10:34], labels), selected = "tx_log_sociaux"
                            ),
                            
                            sliderInput(

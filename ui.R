@@ -51,12 +51,12 @@ ui <- navbarPage("Pavillon'R",
                            
                            fluidRow(
                              column(
-                               5,
+                               6,
                                align = "center",
                                textOutput("annee_map_1")  # Année pour la 1re carte
                              ),
                              column(
-                               5,
+                               6,
                                align = "center",
                                textOutput("annee_map_2")  # Année pour la 2e carte
                              )
@@ -130,8 +130,8 @@ ui <- navbarPage("Pavillon'R",
                           fluidPage(
                             selectInput("dep_plot_tx_acroissement","Choisir un département :",
                                         choices = unique(dta$nom_departement)),
-                            plotOutput("plot_tx_accroissement"),
-                            plotOutput("plot_age_pop")
+                            fluidRow(column(width=7,plotOutput("plot_tx_accroissement")),
+                                     column(width=5,plotOutput("plot_age_pop")))
                           )
                  ),
                  

@@ -106,8 +106,8 @@ server <- function(input, output) {
             legend.position = "right",
             legend.box = "vertical",
             legend.key.size = unit(0.4,'cm'),
-            legend.text = element_text(size = 9), 
-            legend.title = element_text(size = 10),
+            legend.text = element_text(size = 14), 
+            legend.title = element_text(size = 18),
             legend.spacing = unit(1.0,"cm"),
             axis.title = element_blank(),
             axis.text = element_blank(),
@@ -202,7 +202,11 @@ server <- function(input, output) {
       geom_line(color = "orangered1", size = 1.2) +
       geom_point(color = "orangered1", size = 2) +
       labs(x = "Années", y = "Taux d'accroissement", title = "Variation du taux d'accroissement par département entre 2016 et 2021" ) +
-      theme_minimal()
+      theme_minimal()+
+      theme(plot.title = element_text(size=16,face="bold"),
+            axis.title = element_text(size=14,face="bold"),
+            axis.text = element_text(size=12),
+            axis.line = element_line(color = "black", size = 1.2))
   })
   
   output$plot_age_pop <- renderPlot({
@@ -226,10 +230,14 @@ server <- function(input, output) {
     
     ggplot(df_bar, aes(x = tranche, y = population, fill = tranche)) +
       geom_bar(stat = "identity", show.legend = FALSE) +
-      scale_fill_manual(values = c("orangered1", "orangered1", "orangered1")) +
+      scale_fill_manual(values = c("gold", "orange", "orangered2")) +
       labs(x = NULL, y = "Population moyenne",
            title = paste("Population moyenne par tranche d'âge -", input$dep_plot_tx_acroissement)) +
-      theme_minimal()
+      theme_minimal()+
+      theme(plot.title = element_text(size=16,face="bold"),
+            axis.title = element_text(size=14,face="bold"),
+            axis.text = element_text(size=12),
+            axis.line = element_line(color = "black", size = 1.2))
   })
     
   
@@ -243,15 +251,15 @@ server <- function(input, output) {
   })
   
   
-  output$lines<- renderPlot({
-    dta %>%
-      mutate(année_publication = as.factor(dta$année_publication)) %>% 
-      group_by(année_publication) %>% 
-      summarise(mean_pauvrete = mean(tx_pauvrete,na.rm=T)) %>% 
-      ggplot(aes(x=année_publication,y=mean_pauvrete))+
-      geom_point()+
-      theme_minimal()
-  })
+  # output$lines<- renderPlot({
+  #   dta %>%
+  #     mutate(année_publication = as.factor(dta$année_publication)) %>% 
+  #     group_by(année_publication) %>% 
+  #     summarise(mean_pauvrete = mean(tx_pauvrete,na.rm=T)) %>% 
+  #     ggplot(aes(x=année_publication,y=mean_pauvrete))+
+  #     geom_point()+
+  #     theme_minimal()
+  # })
   
   output$titre_parc_social <- renderUI({
     
@@ -364,6 +372,19 @@ server <- function(input, output) {
   
   output$parc_social_graph2 <- renderPlot({
     
+    noms_var <- c(
+      tx_log_sociaux = "Taux de logements sociaux (en %)",
+      social_nb_logements = "Parc social - Nombre de logements",
+      social_location = "Parc social - Logements mis en location",
+      social_demoli = "Parc social - Logements démolis",
+      social_ventes_physiques = "Parc social - Ventes à des personnes physiques",
+      social_vacants = "Parc social - Taux de logements vacants (en %)",
+      social_individuel = "Parc social - Taux de logements individuels (en %)",
+      social_loyer_m2 = "Parc social - Loyer moyen (en €/m²/mois)",
+      social_age_moyen = "Parc social - Âge moyen du parc (en années)",
+      social_tx_energivores = "Parc social - Taux de logements énergivores (E,F,G) (en %)"
+    )
+    
     y_label <- noms_var[[input$var_graph2]]
     
     df_plot <- dta %>%
@@ -380,7 +401,9 @@ server <- function(input, output) {
       labs(x = NULL, y = y_label, title = NULL) +
       theme_minimal()+
       scale_x_discrete(expand = c(0.01, 0.01))+
-      theme(axis.text = element_text(size=14,face="bold"))
+      theme(axis.text = element_text(size=14),
+            axis.title = element_text(size = 18,face="bold"),
+            axis.line = element_line(color = "black", size = 1.2))
   })
   
   pal <- leaflet::colorFactor(palette=c("#1B9E77","#E6AB02","#7570B3","#D95F02"),domain=test$nom_region)

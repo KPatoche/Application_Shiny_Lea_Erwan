@@ -195,22 +195,20 @@ ui <- navbarPage("Pavillon'R",
                             tabPanel("Tableau",DTOutput("table")),
                             tabPanel("Résumé des données", verbatimTextOutput("summaryTable")),
                             tabPanel("Exploration", icon = icon("chart-bar"),
-                                     sidebarLayout(
-                                       sidebarPanel(
-                                         width = 3,
-                                         selectInput("var_x", "Variable X :", 
-                                                     choices = colnames(france_dep_data)[10:34]),
-                                         selectInput("var_y", "Variable Y :", 
-                                                     choices = colnames(france_dep_data)[10:34])
+                                     fluidPage(
+                                       fluidRow(
+                                         column(width = 3,
+                                         selectInput("var_x", "Abscisse :", 
+                                                     choices = colnames(france_dep_data)[10:34])),
+                                         column(width=3,
+                                         selectInput("var_y", "Ordonné :", 
+                                                     choices = colnames(france_dep_data)[10:34]))
                                        ),
-                                       mainPanel(
-                                         fluidRow(
-                                           # Scatter plot bivarié
+                                       fluidRow(
                                            column(
                                              width = 6,
-                                             plotOutput("bivariate_plot", height = "400px")
+                                             plotlyOutput("bivariate_plot", height = "400px")
                                            ),
-                                           # Matrice de corrélation
                                            column(
                                              width = 6,
                                              plotOutput("correlation_plot", height = "400px")
@@ -219,8 +217,7 @@ ui <- navbarPage("Pavillon'R",
                                        )
                                      )
                             )
-                          )
-                 ),
+                          ),
                  
                  # ---- Onglet 6 ----
                  tabPanel("Info", icon=icon("info-circle"), 

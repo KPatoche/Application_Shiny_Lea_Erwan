@@ -390,16 +390,21 @@ server <- function(input, output) {
   })
     
   
-  output$bivariate_plot <- renderPlot({
-    ggplot(france_dep_data, aes(x = .data[[input$var_x]], y = .data[[input$var_y]])) +
-      geom_point(alpha = 0.6, color = "#2C3E50") +
-      geom_smooth(method = "lm", se = FALSE, color = "#E74C3C") +
+  output$bivariate_plot <- renderPlotly({
+    plot <- ggplot(france_dep_data, aes(x = .data[[input$var_x]], 
+                                y = .data[[input$var_y]]),
+                                text = paste("Département :", france_dep_data$Departement, 
+                                "<br>Année :", france_dep_data$Annee)) +
+      geom_point(alpha = 0.6, color = "orangered2") +
       theme_minimal() +
       labs(
         x = input$var_x,
         y = input$var_y,
         title = paste("Relation entre", input$var_x, "et", input$var_y)
       )
+    
+    ggplotly(plot, tooltip = "text")
+    
   })
   
   output$correlation_plot <- renderPlot({

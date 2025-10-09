@@ -40,12 +40,12 @@ ui <- navbarPage("Pavillon'R",
                            fluidRow(
                              column(
                                6,
-                                plotOutput("genMap_1", height="600px", width="100%"),
+                                plotOutput("genMap_1", height="570px", width="100%"),
                              ),
                              column(
                                6,
                                tags$div(style = "padding-left:0; padding-right:0;",
-                                        plotOutput("genMap_2", height="600px", width="120%"))
+                                        plotOutput("genMap_2", height="570px", width="120%"))
                                
                              )),
                            
@@ -72,13 +72,22 @@ ui <- navbarPage("Pavillon'R",
                          fluidRow(
                            column(
                              width = 12,
-                             offset = 2,
-                             plotOutput("intro_plot", height = "600px", width = "90%")
+                             plotOutput("visu1", height = "650px", width = "100%"),
+                             style = "margin-left: 150px;" 
                            )
-                         )
+                         ),
+                         hr(),
+                         fluidRow(
+                           column(
+                             width = 12,
+                             plotOutput("visu2", height = "650px", width = "120%"),
+                             style = "margin-left: 80px;" 
+                           )
+                           
                        )
                      )
                    )
+                 )
                  ),
                  
                  # ---- Onglet 2 sans sidebar ----

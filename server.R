@@ -23,7 +23,7 @@ server <- function(input, output) {
       return(c("orangered1","white","royalblue2"))}
   }
   
-  output$intro_plot <- renderPlot({
+  output$visu1 <- renderPlot({
     
     france_dep_data %>%
       ggplot(aes(x=long,y=lat,group=group,fill=variation_loyer))+ 
@@ -44,8 +44,8 @@ server <- function(input, output) {
       ggtitle("Variation du loyer moyen des logements sociaux par département entre 2016 et 2021",subtitle = expression("La variation se fait sur le loyer en m"^2))+
       theme(legend.title = element_text(face = "bold",hjust=0.5,size = 14),
             legend.text = element_text(size = 14),
-            plot.title = element_text(face = "bold", size = 16),
-            plot.subtitle = element_text(face = "italic", size = 14),
+            plot.title = element_text(face = "bold", size = 18),
+            plot.subtitle = element_text(face = "italic", size = 15),
             axis.title = element_blank(),
             axis.text = element_blank(),
             panel.grid.major = element_blank(),
@@ -54,6 +54,46 @@ server <- function(input, output) {
             )
     
   })
+  
+  output$visu2 <- renderPlot({
+    
+    dta %>%
+      group_by(année_publication) %>%
+      summarise(Energivore = sum(social_tx_energivores*social_nb_logements,na.rm=T)/sum(social_nb_logements,na.rm=T)) %>% 
+      ggplot(aes(x=année_publication,y=Energivore,group = 1))+
+      geom_line(aes(colour ="orangered2",size=1.2))+
+      geom_point(aes(colour ="orangered2",size=2))+
+      ggtitle("Evolution du pourcentage de logement sociaux énergivores en France métropolitaine de 2016 à 2021")+
+      labs(x=NULL,y="Pourcentage de logements sociaux énergivores")+
+      scale_y_continuous(labels = function(x) paste0(x, "%"))+
+      theme(panel.background = element_rect(fill = "white"),
+            legend.position = "none",
+            axis.line = element_line(color = "black", size = 1.2),
+            plot.title = element_text(face = "bold", size = 18),
+            axis.text = element_text(size=14),
+            axis.title = element_text(size=16),
+            panel.grid.minor.y= element_line(colour="gray"))+
+      scale_x_discrete(expand = c(0.01, 0.01))+
+      #Flèche de gauche
+      annotate("segment",
+               x = "2020", xend = "2020",   
+               y = 17,  yend = 14.8,   
+               arrow = arrow(length = unit(0.3, "cm")),
+               color = "black", size = 0.9) +
+      annotate("text",
+               x = "2020", y = 17.5, label = "-abaisse \n-baisse de la valeur carbone dans l'électricité", color = "black", size = 4) +
+      #Flèche de droite
+      annotate("segment",
+               x = "2021", xend = "2021",   
+               y = 18.5,  yend = 17,   
+               arrow = arrow(length = unit(0.3, "cm")),
+               color = "black", size = 0.9) +
+      annotate("text",
+               x = "2021", y = 18.7, label = "Covid", color = "black", size = 4)
+            
+  })
+  
+  
   
   output$titre_intro <- renderUI({
     h3(paste0(titles[input$var]," entre ",input$annee[1]," et ",input$annee[2]))
@@ -201,7 +241,8 @@ server <- function(input, output) {
     ggplot(df_plot, aes(x = année_publication, y = valeur, group = 1)) +
       geom_line(color = "orangered1", size = 1.2) +
       geom_point(color = "orangered1", size = 2) +
-      labs(x = "Années", y = "Taux d'accroissement", title = "Variation du taux d'accroissement par département entre 2016 et 2021" ) +
+      labs(x = "Années", y = "Taux d'accroissement") +
+      ggtitle ("Variation du taux d'accroissement par département entre 2016 et 2021" , subtitle = paste0("Département : ",str_to_sentence(input$dep_plot_tx_acroissement)) )+
       theme_minimal()+
       theme(plot.title = element_text(size=16,face="bold"),
             axis.title = element_text(size=14,face="bold"),
@@ -231,8 +272,8 @@ server <- function(input, output) {
     ggplot(df_bar, aes(x = tranche, y = population, fill = tranche)) +
       geom_bar(stat = "identity", show.legend = FALSE) +
       scale_fill_manual(values = c("gold", "orange", "orangered2")) +
-      labs(x = NULL, y = "Population moyenne",
-           title = paste("Population moyenne par tranche d'âge -", input$dep_plot_tx_acroissement)) +
+      labs(x = NULL, y = "Population moyenne")+
+      ggtitle("Population moyenne par tranche d'âge",subtitle = paste0("Département : ",str_to_sentence(input$dep_plot_tx_acroissement))) +
       theme_minimal()+
       theme(plot.title = element_text(size=16,face="bold"),
             axis.title = element_text(size=14,face="bold"),

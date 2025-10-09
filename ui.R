@@ -228,6 +228,12 @@ ui <- navbarPage("Pavillon'R",
                  # ---- Onglet 5 ----
                  
                  tabPanel("ACP", icon = icon("table"),
+                          fluidRow(selectInput(
+                            inputId = "ACP_categorie",
+                            label = "Choisir la catégorie pour l'ACP",
+                            choices = c("Année" = "annee", "Département" = "departement", "Région" = "region"),
+                            selected = "annee"
+                          )),
                             fluidRow(
                               column(6, plotOutput("ACP_ind")),
                               column(6, plotOutput("ACP_var"))

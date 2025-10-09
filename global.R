@@ -258,7 +258,8 @@ library(missMDA)
 pre_acp <-missMDA::imputePCA(dta[,-c(2,4,8,20,23,31:34)],quali.sup = c(1,2,3),quanti.sup=c(4:5,6:13))
 ACP_social <- PCA(pre_acp$completeObs,quali.sup = c(1,2,3),quanti.sup=c(4:5,6:13))
 
-plot.PCA(ACP_social,choix = "ind",select = "quali")
+Factoshiny(pre_acp$completeObs)
+
 
 simul <- function(nbsimul,nind,nvar){
   res <- rep(0,times = nbsimul)

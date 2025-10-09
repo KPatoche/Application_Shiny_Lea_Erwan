@@ -61,8 +61,8 @@ server <- function(input, output) {
       group_by(année_publication) %>%
       summarise(Energivore = sum(social_tx_energivores*social_nb_logements,na.rm=T)/sum(social_nb_logements,na.rm=T)) %>% 
       ggplot(aes(x=année_publication,y=Energivore,group = 1))+
-      geom_line(aes(colour ="orangered2",size=1.2))+
-      geom_point(aes(colour ="orangered2",size=2))+
+      geom_line(color ="orangered2",size=1.2)+
+      geom_point(color ="orangered2",size=2)+
       ggtitle("Evolution du pourcentage de logement sociaux énergivores en France métropolitaine de 2016 à 2021")+
       labs(x=NULL,y="Pourcentage de logements sociaux énergivores")+
       scale_y_continuous(labels = function(x) paste0(x, "%"))+
@@ -79,18 +79,34 @@ server <- function(input, output) {
                x = "2020", xend = "2020",   
                y = 17,  yend = 14.8,   
                arrow = arrow(length = unit(0.3, "cm")),
-               color = "black", size = 0.9) +
-      annotate("text",
-               x = "2020", y = 17.5, label = "-abaisse \n-baisse de la valeur carbone dans l'électricité", color = "black", size = 4) +
-      #Flèche de droite
-      annotate("segment",
-               x = "2021", xend = "2021",   
-               y = 18.5,  yend = 17,   
-               arrow = arrow(length = unit(0.3, "cm")),
-               color = "black", size = 0.9) +
-      annotate("text",
-               x = "2021", y = 18.7, label = "Covid", color = "black", size = 4)
+               color = "black", size = 0.9)
             
+  })
+  
+  output$visu3 <- renderPlot({
+    dta %>%
+      group_by(année_publication) %>%
+      ggplot(aes(x=année_publication,y=social_tx_energivores))+
+      geom_line(aes(color=nom_departement, group=nom_departement),alpha=0.3,size=1.2)+
+      geom_point(aes(color=nom_departement),size=2)+
+      ggtitle("Evolution du pourcentage de logement sociaux énergivores en France métropolitaine de 2016 à 2021")+
+      labs(x=NULL,y="Pourcentage de logements sociaux énergivores")+
+      scale_y_continuous(labels = function(x) paste0(x, "%"))+
+      theme(panel.background = element_rect(fill = "white"),
+            legend.position = "none",
+            axis.line = element_line(color = "black", size = 1.2),
+            plot.title = element_text(face = "bold", size = 18),
+            axis.text = element_text(size=14),
+            axis.title = element_text(size=16),
+            panel.grid.minor.y= element_line(colour="gray"))+
+      scale_x_discrete(expand = c(0.01, 0.01))+
+      #Flèche de gauche
+      annotate("segment",
+               x = "2020", xend = "2020",   
+               y = 45,  yend = 43,   
+               arrow = arrow(length = unit(0.3, "cm")),
+               color = "black", size = 0.9)
+    
   })
   
   
@@ -198,7 +214,7 @@ server <- function(input, output) {
                "Parc social - Taux de logements énergivores (E,F,G) (en %)"))
   
   output$summaryTable <- renderPrint({options(width = 150)
-    dta_summary <- dta[,-c(31,32,33,34,35,36)]
+    dta_summary <- dta[,-c(31,32,33)]
     colnames(dta_summary) <- c("Année",
                              "Code du département",
                              "Département",

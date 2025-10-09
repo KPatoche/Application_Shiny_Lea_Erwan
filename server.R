@@ -139,7 +139,7 @@ server <- function(input, output) {
                "Parc social - Âge moyen du parc (en années)",
                "Parc social - Taux de logements énergivores (E,F,G) (en %)"))
   
-  output$summaryTable <- renderPrint({
+  output$summaryTable <- renderPrint({options(width = 150)
     dta_summary <- dta[,-c(31,32,33)]
     colnames(dta_summary) <- c("Année",
                              "Code du département",
@@ -237,6 +237,7 @@ server <- function(input, output) {
   
   output$parc_social_plot <- renderPlotly({
     
+    #Graphique par département
     if (input$niveau == "nom_departement") {
       df_plot <- dta %>% 
         group_by(nom_departement) %>% 
@@ -257,8 +258,10 @@ server <- function(input, output) {
           expand = c(0, 0),
           limits = c(0, NA),
           labels = scales::label_number(accuracy = 0.1, big.mark = " ")
-        )
-      
+        )+
+        theme_minimal()
+    
+    #Graphique par région
     } else if (input$niveau == "nom_region") {
       df_plot <- dta %>% 
         group_by(nom_region) %>% 
@@ -271,9 +274,9 @@ server <- function(input, output) {
       )) +
         geom_col(fill = "#3182bd") +
         labs(
-          title = "Moyenne entre 2016 et 2021",
+          title = "Moyenne sur la période 2016-2021",
           x = NULL,
-          y = NULL
+          y = input$var_parc
         ) +
         scale_x_continuous(
           expand = c(0, 0),
@@ -281,7 +284,6 @@ server <- function(input, output) {
           labels = scales::label_number(accuracy = 0.1, big.mark = " ")
         )
     }
-    
     ggplotly(p, tooltip = "text")
   })
   
@@ -290,13 +292,19 @@ server <- function(input, output) {
     df_plot <- dta %>%
       filter(nom_departement %in% input$dep_graph2) %>%
       select(année_publication, valeur = all_of(input$var_graph2)) %>% 
-      mutate(année_publication = factor(année_publication, levels = sort(unique(année_publication))))
+      mutate(année_publication = factor(année_publication, levels = sort(unique(année_publication)))) %>% 
+      filter(!is.na(valeur))
+    
+    df_plot <- df_plot
     
     ggplot(df_plot, aes(x = année_publication, y = valeur, group = 1)) +
       geom_line(color = "#3182bd", size = 1.2) +
       geom_point(color = "#3182bd", size = 2) +
       labs(x = NULL, y = NULL, title = NULL) +
-      theme_minimal()
+      ggtitle(label="à faire",subtitle=paste0("Département :", str_to_sentence(input$dep_graph2)))+
+      theme_minimal()+
+      scale_x_discrete(expand = c(0.01, 0.01))+
+      theme(axis.text = element_text(size=14,face="bold"))
   })
   
   pal <- leaflet::colorFactor(palette=c("#1B9E77","#E6AB02","#7570B3","#D95F02"),domain=test$nom_region)
@@ -338,7 +346,11 @@ server <- function(input, output) {
   
   #Bulle d'information quand on clique sur un département
     output$info <- renderUI({
+      img_src <- paste0(dept$code_departement, ".png")  # ou dept$nom_departement
+      
+      
       HTML(paste0(
+        "<img src='", img_src, "' style='width:80px;height:auto;display:block; margin:auto;'><br>",
         "<b>Département :</b> ", str_to_sentence(dept$nom_departement), "<br>",
         "<b>Région :</b> ", str_to_sentence(dept$nom_region), "<br>",
         "<b>Nombre d'habitants : </b>", dept$habitants,"<br>",

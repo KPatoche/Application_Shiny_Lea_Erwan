@@ -1,39 +1,84 @@
 ui <- navbarPage("Pavillon'R",
                  theme=shinytheme("united"),
-                 
-                 # ---- Onglet 1 avec sidebar ----
-                 tabPanel("Introduction", icon = icon("file-alt"),
-                          sidebarLayout(
-                            sidebarPanel(width=2,
-                                         selectInput("var", "Que voulez-vous voir sur cette carte?", 
-                                                     choices = setNames(colnames(france_dep_data)[10:34],labels)),
-                                         sliderInput("annee","Années :", min=2016, max=2021, value=c(2016,2021))
-                            ),
-                            mainPanel(
-                              fluidRow(
-                                column(width = 12, align = "center",   # centre le contenu
-                                       plotOutput("intro_plot", height = "600px", width = "90%")
-                                )
-                              ),
-                              fluidRow(
-                                column(12, align = "center",
-                                       h3("Évolution de la variable sélectionnée par département")
-                                )
-                              ),
-                              fluidRow(
-                                column(6, align = "center", plotOutput("genMap_1",height="600px",width = "100%")),
-                                column(6, align = "center", plotOutput("genMap_2",height="600px",width = "100%"))
-                              ),
-                              fluidRow(
-                                column(6, align = "center", 
-                                       textOutput("annee_map_1")  # année pour la 1re carte
-                                ),
-                                column(6, align = "center", 
-                                       textOutput("annee_map_2")  # année pour la 2e carte
-                                )
-                              )
-                            )
-                          )
+                 tabPanel(
+                   "Intro",
+                   
+                   tabsetPanel(
+                     
+                     # ---- Sous-onglet 1 : Comparaison ----
+                     tabPanel(
+                       "Comparaison",
+                       
+                       sidebarLayout(
+                         sidebarPanel(
+                           width = 2,
+                           
+                           selectInput(
+                             "var",
+                             "Que voulez-vous voir sur cette carte ?", 
+                             choices = setNames(colnames(france_dep_data)[10:34], labels)
+                           ),
+                           
+                           sliderInput(
+                             "annee",
+                             "Années :",
+                             min = 2016,
+                             max = 2021,
+                             value = c(2016, 2021)
+                           )
+                         ),
+                         
+                         mainPanel(
+                           fluidRow(
+                             column(
+                               12,
+                               align = "center",
+                               uiOutput("titre_intro")
+                             )
+                           ),
+                           
+                           fluidRow(
+                             column(
+                               6,
+                                plotOutput("genMap_1", height="600px", width="100%"),
+                             ),
+                             column(
+                               6,
+                               tags$div(style = "padding-left:0; padding-right:0;",
+                                        plotOutput("genMap_2", height="600px", width="120%"))
+                               
+                             )),
+                           
+                           fluidRow(
+                             column(
+                               5,
+                               align = "center",
+                               textOutput("annee_map_1")  # Année pour la 1re carte
+                             ),
+                             column(
+                               5,
+                               align = "center",
+                               textOutput("annee_map_2")  # Année pour la 2e carte
+                             )
+                           )
+                         )
+                       )
+                     ),
+                     
+                     # ---- Sous-onglet 2 : Visualisation ----
+                     tabPanel(
+                       "Visualisation",
+                       mainPanel(
+                         fluidRow(
+                           column(
+                             width = 12,
+                             offset = 2,
+                             plotOutput("intro_plot", height = "600px", width = "90%")
+                           )
+                         )
+                       )
+                     )
+                   )
                  ),
                  
                  # ---- Onglet 2 sans sidebar ----

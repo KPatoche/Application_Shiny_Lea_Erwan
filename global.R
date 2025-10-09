@@ -121,8 +121,6 @@ regions$nom_region[regions$nom_region == "Provence-Alpes-Côte d'Azur"] <- "PROV
 
 france_dep_data <- left_join(regions,france_dep_data,by=join_by(nom_region))
 
-View(france_dep_data)
-
 # france_dep_data %>% 
 #   filter(année_publication==2023) %>% 
 #   ggplot(aes(x=long,y=lat,group=group,fill=nom_region))+ 
@@ -142,6 +140,34 @@ labels <- c("Nombre d'habitants","Densité de population au km²","Variation de 
             "Moyenne annuelle de la construction neuve sur 10 ans","Construction","Parc social - Nombre de logements","Parc social - Logements mis en location",
             "Parc social - Logements démolis","Parc social - Ventes à des personnes physiques","Parc social - Taux de logements vacants (en %)","Parc social - Taux de logements individuels (en %)",
             "Parc social - Loyer moyen (en €/m²/mois)","Parc social - Âge moyen du parc (en années)","Parc social - Taux de logements énergivores (E,F,G)* (en %)")
+
+titles <- c(
+  habitants             = "Comparaison du nombre d'habitants par département",
+  densite_km2           = "Comparaison de la densité de population par département",
+  variation_10ans        = "Comparaison de la variation de la population sur 10 ans par département",
+  sold_naturel         = "Comparaison du solde naturel par département",
+  solde_migra      = "Comparaison du solde migratoire par département",
+  pop_inf20        = "Comparaison de la part de la population de moins de 20 ans par département",
+  pop_sup60           = "Comparaison de la part de la population âgée de 60 ans et plus par département",
+  tx_chomage            = "Comparaison du taux de chômage par département",
+  tx_pauvrete          = "Comparaison du taux de pauvreté par département",
+  nb_logements          = "Comparaison du nombre total de logements par département",
+  nb_res_princ    = "Comparaison du nombre de résidences principales par département",
+  tx_log_sociaux        = "Comparaison du taux de logements sociaux par département",
+  tx_log_vac        = "Comparaison du taux de logements sociaux vacants par département",
+  tx_log_individuels    = "Comparaison du taux de logements sociaux individuels par département",
+  moy_construction_10ans= "Comparaison de la moyenne annuelle de construction de logements sociaux sur 10 ans par département",
+  construction          = "Comparaison du nombre de nouvelles constructions de logements sociaux  par département",
+  social_nb_logements   = "Comparaison du nombre de logements du parc social par département",
+  social_location       = "Comparaison du nombre de logements sociaux mis à la location pour la première fois par département",
+  social_demoli         = "Comparaison du nombre de logements sociaux démolis par département",
+  social_ventes_physiques = "Comparaison du nombre de ventes de logements sociaux à des particuliers par département",
+  social_vacants        = "Comparaison du taux de logements sociaux vacants par département",
+  social_individuel     = "Comparaison du taux de logements sociaux individuels par département",
+  social_loyer_m2       = "Comparaison du loyer moyen du parc social par département",
+  social_age_moyen      = "Comparaison de l'âge moyen du parc social par département",
+  social_tx_energivores = "Comparaison du taux de logements sociaux énergivores par département"
+)
 
 
 cor_matrix <- cor(dta_moy[ , -c(1,27,28)], use = "pairwise.complete.obs", method = "pearson")
@@ -212,7 +238,7 @@ test %>%
   geom_line()
 
 moy <- mean(france_dep_data$variation_loyer)
-france_dep_data %>%
+g <-france_dep_data %>%
   ggplot(aes(x=long,y=lat,group=group,fill=variation_loyer))+ 
   geom_polygon(col="black") + 
   theme_minimal() +

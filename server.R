@@ -17,9 +17,10 @@ server <- function(input, output) {
     if (var_name %in% c("tx_chomage","tx_pauvrete","social_demoli","social_vacants","social_tx_energivores","social_age_moyen",
                         "social_loyer_m2")) {  
       return(c("royalblue2","white","orangered1"))
-    } else {
-      return(c("orangered1","white","royalblue2")) 
-    }
+    } else if (var_name %in% c("habitants","densite_km2","pop_inf20","pop_sup60","nb_logements")){
+      return(c("lightyellow","gold","orangered1")) 
+    } else{ 
+      return(c("orangered1","white","royalblue2"))}
   }
   
   output$intro_plot <- renderPlot({
@@ -54,6 +55,10 @@ server <- function(input, output) {
     
   })
   
+  output$titre_intro <- renderUI({
+    h3(paste0(titles[input$var]," entre ",input$annee[1]," et ",input$annee[2]))
+  })
+  
   
 #Carte pour année 1  
   output$genMap_1 <- renderPlot({
@@ -68,7 +73,10 @@ server <- function(input, output) {
       theme_minimal() +
       scale_fill_gradientn(colors = pals,
                            limits=lims)+
-      theme(legend.position = "none")
+      theme(legend.position = "none",
+            axis.title = element_blank(),
+            axis.text = element_blank(),
+            panel.grid = element_blank())
     
   })
 #Carte pour année 2
@@ -87,14 +95,24 @@ server <- function(input, output) {
       geom_polygon(col="black") + 
       theme_minimal() +
       scale_fill_gradientn(colors = pals,
-                           limits=lims)+
+                           limits=lims,
+                           guide = guide_colorbar(
+                             title.position = "top",
+                             barwidth = unit(1.8, "cm"),
+                             barheight = unit(8, "cm"), 
+                             frame.colour = "black"))+
       labs(fill=legend_title) +
-      theme(legend.position = "right",
-            legend.box.margin = margin(0, 20, 0, 0),
-            legend.key.width = unit(0.6, "cm"),  
+      theme(
+            legend.position = "right",
+            legend.box = "vertical",
+            legend.key.size = unit(0.4,'cm'),
             legend.text = element_text(size = 9), 
-            legend.title = element_text(size = 10))
-    
+            legend.title = element_text(size = 10),
+            legend.spacing = unit(1.0,"cm"),
+            axis.title = element_blank(),
+            axis.text = element_blank(),
+            panel.grid = element_blank())+
+      labs(fill = str_wrap(legend_title, width = 10))
   })
   
   output$annee_map_1 <- renderText({

@@ -199,8 +199,8 @@ server <- function(input, output) {
       mutate(année_publication = factor(année_publication, levels = sort(unique(année_publication))))
     
     ggplot(df_plot, aes(x = année_publication, y = valeur, group = 1)) +
-      geom_line(color = "#3182bd", size = 1.2) +
-      geom_point(color = "#3182bd", size = 2) +
+      geom_line(color = "orangered1", size = 1.2) +
+      geom_point(color = "orangered1", size = 2) +
       labs(x = "Années", y = "Taux d'accroissement", title = "Variation du taux d'accroissement par département entre 2016 et 2021" ) +
       theme_minimal()
   })
@@ -226,7 +226,7 @@ server <- function(input, output) {
     
     ggplot(df_bar, aes(x = tranche, y = population, fill = tranche)) +
       geom_bar(stat = "identity", show.legend = FALSE) +
-      scale_fill_manual(values = c("darkgreen", "gold", "deeppink4")) +
+      scale_fill_manual(values = c("orangered1", "orangered1", "orangered1")) +
       labs(x = NULL, y = "Population moyenne",
            title = paste("Population moyenne par tranche d'âge -", input$dep_plot_tx_acroissement)) +
       theme_minimal()
@@ -253,7 +253,64 @@ server <- function(input, output) {
       theme_minimal()
   })
   
+  output$titre_parc_social <- renderUI({
+    
+    titre_plot <- switch(input$var_parc,
+                         "tx_log_sociaux" = "Moyenne du taux de logements sociaux (en %) pour la période 2016-2021",
+                         "social_nb_logements" = "Moyenne du nombre de logements dans le parc social pour la période 2016-2021",
+                         "social_location" = "Moyenne du nombre de logements loués dans le parc social pour la période 2016-2021",
+                         "social_demoli" = "Moyenne du nombre de logements démolis dans le parc social pour la période 2016-2021",
+                         "social_ventes_physiques" = "Moyenne du nombre de logements du parc social vendus à des personnes physiques pour la période 2016-2021",
+                         "social_vacants" = "Moyenne du taux de logements vacants (en %) dans le parc social pour la période 2016-2021",
+                         "social_individuel" = "Moyenne du taux de logements individuels (en %) dans le parc social pour la période 2016-2021",
+                         "social_loyer_m2" = "Loyer moyen du parc social (en €/m²/mois) pour la période 2016-2021",
+                         "social_age_moyen" = "Âge moyen du parc social (en années) pour la période 2016-2021",
+                         "social_tx_energivores" = "Moyenne du taux de logements énergivores (E,F,G) (en %) dans le parc social pour la période 2016-2021"
+    )
+    h3(titre_plot, style = "text-align: center; font-weight: bold;")
+  })
+  
+  output$titre_parc_social2 <- renderUI({
+    
+    titre_plot <- switch(input$var_graph2,
+                         "tx_log_sociaux" = "Evolution du taux de logements sociaux (en %) pour la période 2016-2021",
+                         "social_nb_logements" = "Evolution du nombre de logements dans le parc social pour la période 2016-2021",
+                         "social_location" = "Evolution du nombre de logements loués dans le parc social pour la période 2016-2021",
+                         "social_demoli" = "Evolution du nombre de logements démolis dans le parc social pour la période 2016-2021",
+                         "social_ventes_physiques" = "Evolution du nombre de logements du parc social vendus à des personnes physiques pour la période 2016-2021",
+                         "social_vacants" = "Evolution du taux de logements vacants (en %) dans le parc social pour la période 2016-2021",
+                         "social_individuel" = "Evolution du taux de logements individuels (en %) dans le parc social pour la période 2016-2021",
+                         "social_loyer_m2" = "Evolution du loyer moyen du parc social (en €/m²/mois) pour la période 2016-2021",
+                         "social_age_moyen" = "Âge moyen du parc social (en années) pour la période 2016-2021",
+                         "social_tx_energivores" = "Evolution du taux de logements énergivores (E,F,G) (en %) dans le parc social pour la période 2016-2021"
+    )
+    h3(titre_plot, style = "text-align: center; font-weight: bold;")
+  })
+  
+  output$dep_selected <- renderUI({
+    req(input$dep_graph2)
+    div(
+      style = "text-align: center; margin-bottom: 10px;",
+      h4(paste("Département :", str_to_sentence(input$dep_graph2)))
+    )
+  })
+ 
   output$parc_social_plot <- renderPlotly({
+    
+    noms_var <- c(
+      tx_log_sociaux = "Taux de logements sociaux (en %)",
+      social_nb_logements = "Parc social - Nombre de logements",
+      social_location = "Parc social - Logements mis en location",
+      social_demoli = "Parc social - Logements démolis",
+      social_ventes_physiques = "Parc social - Ventes à des personnes physiques",
+      social_vacants = "Parc social - Taux de logements vacants (en %)",
+      social_individuel = "Parc social - Taux de logements individuels (en %)",
+      social_loyer_m2 = "Parc social - Loyer moyen (en €/m²/mois)",
+      social_age_moyen = "Parc social - Âge moyen du parc (en années)",
+      social_tx_energivores = "Parc social - Taux de logements énergivores (E,F,G) (en %)"
+    )
+    
+    x_label <- noms_var[[input$var_parc]]
     
     #Graphique par département
     if (input$niveau == "nom_departement") {
@@ -266,18 +323,18 @@ server <- function(input, output) {
         y = reorder(nom_departement, valeur_moy),
         text = paste(nom_departement, ":", round(valeur_moy, 1))
       )) +
-        geom_col(fill = "#3182bd") +
-        labs(
-          title = "Moyenne entre 2016 et 2021",
-          x = NULL,
-          y = NULL
-        ) +
+        geom_col(fill = "orangered1") +
+        labs(x = x_label,y = NULL, title = NULL) + 
+        theme(
+          panel.background = element_rect(fill = "white"),
+          panel.grid.major.x = element_line(color = "grey80"),
+          panel.grid.major.y = element_blank()) +
         scale_x_continuous(
           expand = c(0, 0),
           limits = c(0, NA),
           labels = scales::label_number(accuracy = 0.1, big.mark = " ")
-        )+
-        theme_minimal()
+        )
+
     
     #Graphique par région
     } else if (input$niveau == "nom_region") {
@@ -290,22 +347,24 @@ server <- function(input, output) {
         y = reorder(nom_region, valeur_moy),
         text = paste(nom_region, ":", round(valeur_moy, 1))
       )) +
-        geom_col(fill = "#3182bd") +
-        labs(
-          title = "Moyenne sur la période 2016-2021",
-          x = NULL,
-          y = input$var_parc
-        ) +
+        geom_col(fill = "orangered1") +
+        labs(x = x_label, y = NULL, title = NULL) +
+        theme(
+          panel.background = element_rect(fill = "white"),
+          panel.grid.major.x = element_line(color = "grey80"),
+          panel.grid.major.y = element_blank()) +
         scale_x_continuous(
           expand = c(0, 0),
           limits = c(0, NA),
           labels = scales::label_number(accuracy = 0.1, big.mark = " ")
         )
     }
-    ggplotly(p, tooltip = "text")
+    ggplotly(p, tooltip = "text") %>% layout(title = list(text = ""))
   })
   
   output$parc_social_graph2 <- renderPlot({
+    
+    y_label <- noms_var[[input$var_graph2]]
     
     df_plot <- dta %>%
       filter(nom_departement %in% input$dep_graph2) %>%
@@ -316,10 +375,9 @@ server <- function(input, output) {
     df_plot <- df_plot
     
     ggplot(df_plot, aes(x = année_publication, y = valeur, group = 1)) +
-      geom_line(color = "#3182bd", size = 1.2) +
-      geom_point(color = "#3182bd", size = 2) +
-      labs(x = NULL, y = NULL, title = NULL) +
-      ggtitle(label="à faire",subtitle=paste0("Département :", str_to_sentence(input$dep_graph2)))+
+      geom_line(color = "orangered1", size = 1.2) +
+      geom_point(color = "orangered1", size = 2) +
+      labs(x = NULL, y = y_label, title = NULL) +
       theme_minimal()+
       scale_x_discrete(expand = c(0.01, 0.01))+
       theme(axis.text = element_text(size=14,face="bold"))

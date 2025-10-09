@@ -63,6 +63,7 @@ server <- function(input, output) {
       ggplot(aes(x=année_publication,y=Energivore,group = 1))+
       geom_line(color ="orangered2",size=1.2)+
       geom_point(color ="orangered2",size=2)+
+      labs(caption = "Source : INSEE, SDES et CDC")+
       ggtitle("Evolution du pourcentage de logement sociaux énergivores en France métropolitaine de 2016 à 2021")+
       labs(x=NULL,y="Pourcentage de logements sociaux énergivores")+
       scale_y_continuous(labels = function(x) paste0(x, "%"))+
@@ -87,8 +88,9 @@ server <- function(input, output) {
     dta %>%
       group_by(année_publication) %>%
       ggplot(aes(x=année_publication,y=social_tx_energivores))+
+      labs(caption = "Source : INSEE, SDES et CDC")+
       geom_line(aes(color=nom_departement, group=nom_departement),alpha=0.3,size=1.2)+
-      geom_point(aes(color=nom_departement),size=2)+
+      geom_point(aes(color=nom_departement),size=2,alpha = 0.5)+
       ggtitle("Evolution du pourcentage de logement sociaux énergivores en France métropolitaine de 2016 à 2021")+
       labs(x=NULL,y="Pourcentage de logements sociaux énergivores")+
       scale_y_continuous(labels = function(x) paste0(x, "%"))+
@@ -150,6 +152,7 @@ server <- function(input, output) {
       ggplot(aes(x=long,y=lat,group=group,fill=.data[[input$var]]))+ 
       geom_polygon(col="black") + 
       theme_minimal() +
+      labs(caption = "Source : INSEE, SDES et CDC")+
       scale_fill_gradientn(colors = pals,
                            limits=lims,
                            guide = guide_colorbar(
@@ -257,6 +260,7 @@ server <- function(input, output) {
     ggplot(df_plot, aes(x = année_publication, y = valeur, group = 1)) +
       geom_line(color = "orangered1", size = 1.2) +
       geom_point(color = "orangered1", size = 2) +
+      labs(caption = "Source : INSEE, SDES et CDC")+
       labs(x = "Années", y = "Taux d'accroissement") +
       ggtitle ("Variation du taux d'accroissement par département entre 2016 et 2021" , subtitle = paste0("Département : ",str_to_sentence(input$dep_plot_tx_acroissement)) )+
       theme_minimal()+
@@ -291,6 +295,7 @@ server <- function(input, output) {
       labs(x = NULL, y = "Population moyenne")+
       ggtitle("Population moyenne par tranche d'âge",subtitle = paste0("Département : ",str_to_sentence(input$dep_plot_tx_acroissement))) +
       theme_minimal()+
+      labs(caption = "Source : INSEE, SDES et CDC")+
       theme(plot.title = element_text(size=16,face="bold"),
             axis.title = element_text(size=14,face="bold"),
             axis.text = element_text(size=12),
@@ -394,6 +399,7 @@ server <- function(input, output) {
           panel.background = element_rect(fill = "white"),
           panel.grid.major.x = element_line(color = "grey80"),
           panel.grid.major.y = element_blank()) +
+        labs(caption = "Source : INSEE, SDES et CDC")+
         scale_x_continuous(
           expand = c(0, 0),
           limits = c(0, NA),
@@ -412,6 +418,7 @@ server <- function(input, output) {
         y = reorder(nom_region, valeur_moy),
         text = paste(nom_region, ":", round(valeur_moy, 1))
       )) +
+        labs(caption = "Source : INSEE, SDES et CDC")+
         geom_col(fill = "orangered1") +
         labs(x = x_label, y = NULL, title = NULL) +
         theme(
@@ -457,6 +464,7 @@ server <- function(input, output) {
       geom_point(color = "orangered1", size = 2) +
       labs(x = NULL, y = y_label, title = NULL) +
       theme_minimal()+
+      labs(caption = "Source : INSEE, SDES et CDC")+
       scale_x_discrete(expand = c(0.01, 0.01))+
       theme(axis.text = element_text(size=14),
             axis.title = element_text(size = 18,face="bold"),
@@ -535,6 +543,7 @@ server <- function(input, output) {
                                 "<br>Année :", france_dep_data$Annee)) +
       geom_point(alpha = 0.6, color = "orangered2") +
       theme_minimal() +
+      labs(caption = "Source : INSEE, SDES et CDC")+
       labs(
         x = input$var_x,
         y = input$var_y,

@@ -91,7 +91,7 @@ server <- function(input, output) {
       labs(caption = "Source : INSEE, SDES et CDC")+
       geom_line(aes(color=nom_departement, group=nom_departement),alpha=0.3,size=1.2)+
       geom_point(aes(color=nom_departement),size=2,alpha = 0.5)+
-      ggtitle("Evolution du pourcentage de logement sociaux énergivores en France métropolitaine de 2016 à 2021")+
+      ggtitle("Evolution du pourcentage de logement sociaux énergivores par département de 2016 à 2021")+
       labs(x=NULL,y="Pourcentage de logements sociaux énergivores")+
       scale_y_continuous(labels = function(x) paste0(x, "%"))+
       theme(panel.background = element_rect(fill = "white"),

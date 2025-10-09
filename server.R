@@ -124,7 +124,7 @@ server <- function(input, output) {
   })
 
   output$table <- renderDT(
-    dta[,-c(31,32,33)],
+    dta[,-c(31,32,33,34,35,36)],
     filter = "top",
     colnames=c("Année",
                "Code du département",

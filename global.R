@@ -281,3 +281,17 @@ dta <- dta %>%
 
 dta <- dta %>%
   mutate(pop_20_60 = 100 - pop_inf20 - pop_sup60)
+
+
+dta %>%
+  group_by(année_publication) %>%
+  summarise(Energivore = sum(social_tx_energivores*social_nb_logements,na.rm=T)/sum(social_nb_logements,na.rm=T)) %>% 
+  ggplot(aes(x=année_publication,y=Energivore,group = 1))+
+  geom_line(aes(colour ="orangered2",size=1.2))+
+  geom_point(aes(colour ="orangered2",size=2))+
+  ggtitle("Evolution du pourcentage de logement sociaux énergivores en France métropolitaine de 2016 à 2021")+
+  labs(x=NULL,y="Pourcentage de logements sociaux énergivores")+
+  scale_y_continuous(labels = function(x) paste0(x, "%"))+
+  theme(panel.background = element_rect(fill = "white"),
+        legend.position = "none",
+        axis.line = element_line(color = "black", size = 1.2))

@@ -198,7 +198,7 @@ server <- function(input, output) {
                "Parc social - Taux de logements énergivores (E,F,G) (en %)"))
   
   output$summaryTable <- renderPrint({options(width = 150)
-    dta_summary <- dta[,-c(31,32,33)]
+    dta_summary <- dta[,-c(31,32,33,34,35,36)]
     colnames(dta_summary) <- c("Année",
                              "Code du département",
                              "Département",

@@ -15,10 +15,10 @@ server <- function(input, output) {
   #Inversion de la palette selon la variable
   get_palette <- function(var_name) {
     if (var_name %in% c("tx_chomage","tx_pauvrete","social_demoli","social_vacants","social_tx_energivores","social_age_moyen",
-                        "social_loyer_m2")) {  
+                        "social_loyer_m2","tx_log_vac")) {  
       return(c("royalblue2","white","orangered1"))
-    } else if (var_name %in% c("habitants","densite_km2","pop_inf20","pop_sup60","nb_logements")){
-      return(c("lightyellow","gold","orangered1")) 
+    } else if (var_name %in% c("habitants","densite_km2","pop_inf20","pop_sup60","nb_logements","tx_log_ind")){
+      return(c("white","orangered1")) 
     } else{ 
       return(c("orangered1","white","royalblue2"))}
   }
@@ -75,12 +75,10 @@ server <- function(input, output) {
             axis.title = element_text(size=16),
             panel.grid.minor.y= element_line(colour="gray"))+
       scale_x_discrete(expand = c(0.01, 0.01))+
-      #Flèche de gauche
-      annotate("segment",
-               x = "2020", xend = "2020",   
-               y = 17,  yend = 14.8,   
-               arrow = arrow(length = unit(0.3, "cm")),
-               color = "black", size = 0.9)
+      geom_vline(xintercept = "2020", 
+                 linetype = "dashed", 
+                 color = "black", 
+                 linewidth = 0.8)
             
   })
   
@@ -102,12 +100,10 @@ server <- function(input, output) {
             axis.title = element_text(size=16),
             panel.grid.minor.y= element_line(colour="gray"))+
       scale_x_discrete(expand = c(0.01, 0.01))+
-      #Flèche de gauche
-      annotate("segment",
-               x = "2020", xend = "2020",   
-               y = 45,  yend = 43,   
-               arrow = arrow(length = unit(0.3, "cm")),
-               color = "black", size = 0.9)
+      geom_vline(xintercept = "2020", 
+                 linetype = "dashed", 
+                 color = "black", 
+                 linewidth = 0.8)
     
   })
   
@@ -547,14 +543,17 @@ server <- function(input, output) {
   output$ACP_ind <- renderPlot({
     df <- ACP_social() 
     
-    resACP <- PCA(df, quali.sup=c(1),quanti.sup=c(2,3,4,5,6,7,8,9,10,11,15,16,17,18),graph=FALSE)
+    invisible_opt <- if (input$afficher_individus) NULL else "ind"
     
-    plot.PCA(resACP, invisible='ind.sup', title="Graphe des individus de l'ACP", label='quali')
+    
+    resACP <- PCA(df, quali.sup=c(1),quanti.sup=c(2,3,4,5,6,7,8,9,10,11,13,14,15,16,17,18),graph=FALSE)
+    
+    plot.PCA(resACP, invisible=invisible_opt, title="Graphe des individus de l'ACP", label='quali')
   })
   
   output$ACP_var <- renderPlot({
     df <- ACP_social()  # <- important !
-    resACP <- PCA(df, quali.sup=c(1),quanti.sup=c(2,3,4,5,6,7,8,9,10,11,15,16,17,18),graph=FALSE) # Ajuster quali.sup selon tes données
+    resACP <- PCA(df, quali.sup=c(1),quanti.sup=c(2,3,4,5,6,7,8,9,10,11,13,14,15,16,17,18),graph=FALSE) # Ajuster quali.sup selon tes données
     plot.PCA(resACP,choix = "var")
   })
     

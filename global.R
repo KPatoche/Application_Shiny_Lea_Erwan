@@ -3,7 +3,6 @@ library(maps)
 library(readr)
 library(RColorBrewer)
 library(sf)
-library(Factoshiny)
 library(ggrepel)
 library(readxl)
 library(corrplot)
@@ -155,9 +154,9 @@ titles <- c(
   nb_res_princ    = "Comparaison du nombre de résidences principales par département",
   tx_log_sociaux        = "Comparaison du taux de logements sociaux par département",
   tx_log_vac        = "Comparaison du taux de logements sociaux vacants par département",
-  tx_log_individuels    = "Comparaison du taux de logements sociaux individuels par département",
-  moy_construction_10ans= "Comparaison de la moyenne annuelle de construction de logements sociaux sur 10 ans par département",
-  construction          = "Comparaison du nombre de nouvelles constructions de logements sociaux  par département",
+  tx_log_ind    = "Comparaison du taux de logements sociaux individuels par département",
+  moy_nvl_constru_10ans = "Comparaison de la moyenne annuelle de construction de logements sociaux sur 10 ans par département",
+  nb_construction          = "Comparaison du nombre de nouvelles constructions de logements sociaux  par département",
   social_nb_logements   = "Comparaison du nombre de logements du parc social par département",
   social_location       = "Comparaison du nombre de logements sociaux mis à la location pour la première fois par département",
   social_demoli         = "Comparaison du nombre de logements sociaux démolis par département",
@@ -202,22 +201,11 @@ test <- left_join(test,dta,by=join_by(nom_departement))
 
 pal <- leaflet::colorNumeric(c("red","darkgreen"),domain=test$tx_pauvrete)
 
-leaflet(test) %>%  # ton objet sf
-  addTiles() %>%
-  addPolygons(
-    layerId = ~nom_departement,    # id pour le clic
-    label = ~nom_departement,      # label affiché au survol
-    color = "blue",
-    fillColor = ~pal(tx_pauvrete),
-    weight = 1,
-    fillOpacity = 0.7
-  )
 
 test <- st_set_crs(test, 4326)
-
-
-test_2 <- test %>%
-  filter(année_publication==2018)
+# 
+# test_2 <- test %>%
+#   filter(année_publication==2018)
 
 # test %>%
 #   ggplot() +
@@ -238,27 +226,13 @@ test %>%
   geom_line()
 
 moy <- mean(france_dep_data$variation_loyer)
-g <-france_dep_data %>%
-  ggplot(aes(x=long,y=lat,group=group,fill=variation_loyer))+ 
-  geom_polygon(col="black") + 
-  theme_minimal() +
-  scale_fill_gradient2(low="darkgreen",
-                       mid="white",
-                       high="deeppink4",
-                       midpoint = 0)+
-  ylab("Latitude")+
-  xlab("Longitude")+
-  ggtitle("Variation du loyer moyen des logements sociaux par département entre 2016 et 2021")+
-  theme(legend.title = element_text("Variation loyer (%)"))
-
 
 
 
 library(missMDA)
 pre_acp <-missMDA::imputePCA(dta[,-c(2,4,8,20,23,31:34)],quali.sup = c(1,2,3),quanti.sup=c(4:5,6:13))
-ACP_social <- PCA(pre_acp$completeObs,quali.sup = c(1,2,3),quanti.sup=c(4:5,6:13))
+ACP_social <- PCA(pre_acp$completeObs,quali.sup = c(1,2,3),quanti.sup=c(4:5,6:13),graph=F)
 
-Factoshiny(pre_acp$completeObs)
 
 
 simul <- function(nbsimul,nind,nvar){
@@ -283,16 +257,3 @@ dta <- dta %>%
 dta <- dta %>%
   mutate(pop_20_60 = 100 - pop_inf20 - pop_sup60)
 
-
-dta %>%
-  group_by(année_publication) %>%
-  summarise(Energivore = sum(social_tx_energivores*social_nb_logements,na.rm=T)/sum(social_nb_logements,na.rm=T)) %>% 
-  ggplot(aes(x=année_publication,y=Energivore,group = 1))+
-  geom_line(aes(colour ="orangered2",size=1.2))+
-  geom_point(aes(colour ="orangered2",size=2))+
-  ggtitle("Evolution du pourcentage de logement sociaux énergivores en France métropolitaine de 2016 à 2021")+
-  labs(x=NULL,y="Pourcentage de logements sociaux énergivores")+
-  scale_y_continuous(labels = function(x) paste0(x, "%"))+
-  theme(panel.background = element_rect(fill = "white"),
-        legend.position = "none",
-        axis.line = element_line(color = "black", size = 1.2))

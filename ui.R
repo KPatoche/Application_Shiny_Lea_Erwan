@@ -70,11 +70,11 @@ ui <- navbarPage("Pavillon'R",
                          fluidRow(
                            column(
                              width = 12,
-                             plotOutput("visu1", height = "650px", width = "100%"),
+                             plotOutput("visu1", height = "650px", width = "85%"),
                              style = "margin-left: 150px;" 
                            )
                          ),
-                         hr(),
+                         hr(style = "border-top: 2px solid #bbb; width: 100vw; margin-left: 0; margin-right: 0;"),
                          fluidRow(
                            column(
                              width = 12,
@@ -82,7 +82,7 @@ ui <- navbarPage("Pavillon'R",
                              style = "margin-left: 80px;" 
                            )
                          ),
-                         hr(),
+                         hr(style = "border-top: 2px solid #bbb; width: 100vw; margin-left: 0; margin-right: 0;"),
                          fluidRow(
                            column(
                              width = 12,
@@ -141,12 +141,11 @@ ui <- navbarPage("Pavillon'R",
                  # ---- Onglet 3 ----
                  
                  tabPanel("Démographie et dynamique", icon = icon("user"),
-                          fluidPage(
                             selectInput("dep_plot_tx_acroissement","Choisir un département :",
                                         choices = unique(dta$nom_departement)),
                             fluidRow(column(width=7,plotOutput("plot_tx_accroissement")),
                                      column(width=5,plotOutput("plot_age_pop")))
-                          )
+                          
                  ),
                  
                  # ---- Onglet 4 ----
@@ -228,12 +227,20 @@ ui <- navbarPage("Pavillon'R",
                  # ---- Onglet 5 ----
                  
                  tabPanel("ACP", icon = icon("table"),
-                          fluidRow(selectInput(
+                          fluidRow(
+                            column(width=2,
+                            selectInput(
                             inputId = "ACP_categorie",
                             label = "Choisir la catégorie pour l'ACP",
                             choices = c("Année" = "annee", "Département" = "departement", "Région" = "region"),
                             selected = "annee"
                           )),
+                          column(width=2,
+                          checkboxInput(
+                            inputId = "afficher_individus",
+                            label = "Afficher les individus",
+                            value = TRUE
+                          ))),
                             fluidRow(
                               column(6, plotOutput("ACP_ind")),
                               column(6, plotOutput("ACP_var"))
@@ -297,6 +304,17 @@ ui <- navbarPage("Pavillon'R",
                                       
                                       strong("Taux de pauvreté:"),
                                       p("Pourcentage de la population vivant en dessous du seuil de pauvreté national. En France, il est fixé à 60% du revenu médian."),
+                                      br(),
+                                      
+                                      strong("DPE:"),
+                                      p('Le DPE ou "Diagnostic de Performance Energétique" est un examen créé en 2006. Il a subit 2 reformes majeures en 2006 et en 2021.'),
+                                      p('Il est initalement composé de 2 étiquettes donnant ainsi 2 classes : une étiquette CO2 (kg/CO2/m2/an) et une étiquette énergétique (kWh/m2/an).'),
+                                      p("La réforme de 2021 (RE2020) : a tenté de fiabiliser la méthode pour mieux détecter les passoires thermiques. Cependant certaines mesures, comme l'abaissement des seuils de classe énergétique (A : '<50kWh' --> '<70kWh'), ont fait débat lors de sa mise en place.
+                                        Parmis les autres mesures prises ont peut noter : abaissement du facteur d'énergie primaire ou l'abaissement de la valeur de contenu carbone de l'électricité."),
+                                      br(),
+                                      
+                                      strong("Facteur d'énergie primaire:"),
+                                      p("Facteur de conversion permettant de quantifier l'énergie réellement consommée pour une consommation de 1kWh dans un logement. Cela prend notamment en compte les phénomènes de déperdition sur le réseau."),
                                       br()
                                       
                                       )

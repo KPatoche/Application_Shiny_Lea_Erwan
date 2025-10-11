@@ -1,7 +1,7 @@
 ui <- navbarPage("Pavillon'R",
                  theme=shinytheme("united"),
                  tabPanel(
-                   "Intro",
+                   "Accueil",icon = icon("house"),
                    
                    tabsetPanel(
                      
@@ -97,7 +97,7 @@ ui <- navbarPage("Pavillon'R",
                  
                  # ---- Onglet 2 sans sidebar ----
                  tabPanel(
-                   "Vue d'ensemble",
+                   "Vue d'ensemble",icon = icon("earth-europe"),
                    fluidPage(
                      tags$style("
                           #info {
@@ -226,7 +226,7 @@ ui <- navbarPage("Pavillon'R",
                  
                  # ---- Onglet 5 ----
                  
-                 tabPanel("ACP", icon = icon("table"),
+                 tabPanel("ACP", icon = icon("magnifying-glass-chart"),
                           fluidRow(
                             column(width=2,
                             selectInput(
@@ -242,8 +242,8 @@ ui <- navbarPage("Pavillon'R",
                             value = TRUE
                           ))),
                             fluidRow(
-                              column(6, plotOutput("ACP_ind")),
-                              column(6, plotOutput("ACP_var"))
+                              column(6, plotOutput("ACP_ind", height = "500px", width = "100%")),
+                              column(6, plotOutput("ACP_var", height = "500px", width = "100%"))
                             )
                           ),
                  
@@ -258,10 +258,10 @@ ui <- navbarPage("Pavillon'R",
                                        fluidRow(
                                          column(width = 3,
                                          selectInput("var_x", "Abscisse :", 
-                                                     choices = colnames(france_dep_data)[10:34])),
+                                                     choices = setNames(colnames(dta)[6:30], labels))),
                                          column(width=3,
                                          selectInput("var_y", "Ordonné :", 
-                                                     choices = colnames(france_dep_data)[10:34]))
+                                                     choices = setNames(colnames(dta)[6:30], labels)))
                                        ),
                                        fluidRow(
                                            column(

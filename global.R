@@ -6,6 +6,7 @@ library(sf)
 library(ggrepel)
 library(readxl)
 library(corrplot)
+library(dplyr)
 
 
 #### Importation de la carte ####
@@ -81,18 +82,6 @@ dta <- dta %>%
 #### Fusion données sociales et carte ####
 france_dep_data <- left_join(france_dep,dta,by=join_by(nom_departement))
 
-#Création de la carte
-# france_dep_data %>% 
-#   filter(année_publication==2017) %>% 
-#   ggplot(aes(x=long,y=lat,group=group,fill=nom_departement))+ 
-#   geom_polygon(col="white")
-
-#Exemple sur année 2017
-# dta %>% 
-#   filter(année_publication==2017) %>% 
-#   ggplot(aes(x=tx_pauvrete,y=tx_log_sociaux,label=code_departement)) +
-#   geom_point() + geom_text_repel()
-
 
 #Imporation carte des régions
 url <- "https://france-geojson.gregoiredavid.fr/repo/regions.geojson"
@@ -119,11 +108,6 @@ regions$nom_region[regions$nom_region == 'Pays de la Loire'] <- 'PAYS DE LA LOIR
 regions$nom_region[regions$nom_region == "Provence-Alpes-Côte d'Azur"] <- "PROVENCE-ALPES-CÔTE D'AZUR"
 
 france_dep_data <- left_join(regions,france_dep_data,by=join_by(nom_region))
-
-# france_dep_data %>% 
-#   filter(année_publication==2023) %>% 
-#   ggplot(aes(x=long,y=lat,group=group,fill=nom_region))+ 
-#   geom_polygon(col="white")
 
 france_dep_data$code <- NULL
 france_dep_data$subregion <- NULL
@@ -169,6 +153,61 @@ titles <- c(
 )
 
 
+
+titre_bivaries <- c(
+  habitants             = "le nombre d'habitants",
+  densite_km2           = "la densité (km2)",
+  variation_10ans       = "la variation de population sur 10 ans",
+  sold_naturel          = "le solde naturel",
+  solde_migra      = "le solde migratoire",
+  pop_inf20        = "la part de la population (<20ans)",
+  pop_sup60           = "la part de la population (>60ans)",
+  tx_chomage            = "le taux de chômage",
+  tx_pauvrete          = "le taux pauvreté",
+  nb_logements          = "le nombre de logements",
+  nb_res_princ    = "le nombre de résidences principales",
+  tx_log_sociaux        = "le taux de logements sociaux",
+  tx_log_vac        = "le taux de logements vacants",
+  tx_log_ind    = "le taux de logements individuels",
+  moy_nvl_constru_10ans = "le nombre moyen de construction par an sur 10 ans",
+  nb_construction          = "le nombre de constructions",
+  social_nb_logements   = "le nombre de logements sociaux",
+  social_location       = "le nombre de nouvelles locations pour les logements sociaux",
+  social_demoli         = "le nombre de logements sociaux démolis",
+  social_ventes_physiques = "le nombre de ventes de logements sociaux",
+  social_vacants        = "le taux de logements sociaux vacants",
+  social_individuel     = "le taux de logements sociaux individuels",
+  social_loyer_m2       = "le loyer moyen des logements sociaux (m2)",
+  social_age_moyen      = "l'age moyen du parc social",
+  social_tx_energivores = "le taux de logements sociaux énergivores"
+)
+
+noms_var <- c(
+  habitants             = "Nombre d'habitants",
+  densite_km2           = "Densité(km2)",
+  variation_10ans       = "Variation population sur 10 ans",
+  sold_naturel          = "Solde naturel",
+  solde_migra      = "Solde migratoire",
+  pop_inf20        = "Part de la population (<20ans)",
+  pop_sup60           = "Part de la population (>60ans)",
+  tx_chomage            ="Taux de chômage",
+  tx_pauvrete          = "Taux de pauvreté",
+  nb_logements          = "Nombre de logements",
+  tx_log_sociaux = "Taux de logements sociaux (en %)",
+  social_nb_logements = "Nombre de logements sociaux",
+  social_location = "Logements sociaux mis en location",
+  social_demoli = "Logements sociaux démolis",
+  social_ventes_physiques = "Ventes de logements sociaux",
+  social_vacants = "Taux de logements sociaux vacants (en %)",
+  social_individuel = "Taux de logements sociaux individuels (en %)",
+  social_loyer_m2 = "Loyer moyen des logements sociaux (en €/m²/mois)",
+  social_age_moyen = "Âge moyen du parc social (en années)",
+  social_tx_energivores = "Taux de logements sociaux énergivores(en %)"
+)
+
+
+
+
 cor_matrix <- cor(dta_moy[ , -c(1,27,28)], use = "pairwise.complete.obs", method = "pearson")
 cor_matrix
 corrplot(cor_matrix)
@@ -203,30 +242,6 @@ pal <- leaflet::colorNumeric(c("red","darkgreen"),domain=test$tx_pauvrete)
 
 
 test <- st_set_crs(test, 4326)
-# 
-# test_2 <- test %>%
-#   filter(année_publication==2018)
-
-# test %>%
-#   ggplot() +
-#   geom_point(aes(x=tx_log_sociaux,y=tx_pauvrete,colour = année_publication))+
-#   geom_smooth(aes(x=tx_pauvrete,y=tx_chomage,colour = année_publication))
-# 
-# 
-# test %>% 
-#   ggplot()+
-#   geom_boxplot(aes(x=année_publication,y=tx_pauvrete))
-
-test %>%
-  filter(nom_departement=="paris") %>% 
-  ggplot(aes(x = année_publication, 
-             y = sold_naturel, 
-             col = nom_departement,
-             group = nom_departement)) +
-  geom_line()
-
-moy <- mean(france_dep_data$variation_loyer)
-
 
 
 library(missMDA)
@@ -247,9 +262,7 @@ simul <- function(nbsimul,nind,nvar){
 }
 simul(1000,576,12)
 
-plot.PCA(ACP_social,choix = "var")
 
-library(dplyr)
 
 dta <- dta %>%
   mutate(taux_accroissement = sold_naturel + solde_migra)

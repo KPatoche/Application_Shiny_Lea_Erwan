@@ -57,14 +57,20 @@ server <- function(input, output) {
   
   output$visu2 <- renderPlot({
     
-    dta %>%
+    df_plot <-dta %>%
       group_by(année_publication) %>%
-      summarise(Energivore = sum(social_tx_energivores*social_nb_logements,na.rm=T)/sum(social_nb_logements,na.rm=T)) %>% 
+      summarise(Energivore = sum(social_tx_energivores*social_nb_logements,na.rm=T)/sum(social_nb_logements,na.rm=T))
+    
+    diff_val <- df_plot$Energivore[df_plot$année_publication == 2020] -
+      df_plot$Energivore[df_plot$année_publication == 2019]
+    diff_text <- paste0(round(diff_val, 2), "%") 
+    
+    df_plot %>% 
       ggplot(aes(x=année_publication,y=Energivore,group = 1))+
-      geom_line(color ="orangered2",size=1.2)+
-      geom_point(color ="orangered2",size=2)+
+      geom_line(color ="orangered2",size=1.7)+
+      geom_point(color ="orangered2",size=2.5)+
       labs(caption = "Source : INSEE, SDES et CDC")+
-      ggtitle("Evolution du pourcentage de logement sociaux énergivores en France métropolitaine de 2016 à 2021")+
+      ggtitle("Evolution du pourcentage de logement sociaux énergivores en France métropolitaine de 2016 à 2021",subtitle = "La barre verticale représente une rupture brutale à l'échelle nationale avec une cause incertaine")+
       labs(x=NULL,y="Pourcentage de logements sociaux énergivores")+
       scale_y_continuous(labels = function(x) paste0(x, "%"))+
       theme(panel.background = element_rect(fill = "white"),
@@ -73,7 +79,8 @@ server <- function(input, output) {
             plot.title = element_text(face = "bold", size = 18),
             axis.text = element_text(size=14),
             axis.title = element_text(size=16),
-            panel.grid.minor.y= element_line(colour="gray"))+
+            panel.grid.minor.y= element_line(colour="gray"),
+            plot.subtitle = element_text(size=15))+
       scale_x_discrete(expand = c(0.01, 0.01))+
       geom_vline(xintercept = "2020", 
                  linetype = "dashed", 
@@ -87,9 +94,9 @@ server <- function(input, output) {
       group_by(année_publication) %>%
       ggplot(aes(x=année_publication,y=social_tx_energivores))+
       labs(caption = "Source : INSEE, SDES et CDC")+
-      geom_line(aes(color=nom_departement, group=nom_departement),alpha=0.3,size=1.2)+
-      geom_point(aes(color=nom_departement),size=2,alpha = 0.5)+
-      ggtitle("Evolution du pourcentage de logement sociaux énergivores par département de 2016 à 2021")+
+      geom_line(aes(color=nom_departement, group=nom_departement),alpha=0.3,size=1.7)+
+      geom_point(aes(color=nom_departement),size=2.5,alpha = 0.5)+
+      ggtitle("Evolution du pourcentage de logement sociaux énergivores par département de 2016 à 2021",subtitle = "La barre verticale représente une rupture brutale à l'échelle nationale avec une cause incertaine")+
       labs(x=NULL,y="Pourcentage de logements sociaux énergivores")+
       scale_y_continuous(labels = function(x) paste0(x, "%"))+
       theme(panel.background = element_rect(fill = "white"),
@@ -98,7 +105,8 @@ server <- function(input, output) {
             plot.title = element_text(face = "bold", size = 18),
             axis.text = element_text(size=14),
             axis.title = element_text(size=16),
-            panel.grid.minor.y= element_line(colour="gray"))+
+            panel.grid.minor.y= element_line(colour="gray"),
+            plot.subtitle = element_text(size=15))+
       scale_x_discrete(expand = c(0.01, 0.01))+
       geom_vline(xintercept = "2020", 
                  linetype = "dashed", 
@@ -295,30 +303,11 @@ server <- function(input, output) {
       theme(plot.title = element_text(size=16,face="bold"),
             axis.title = element_text(size=14,face="bold"),
             axis.text = element_text(size=12),
-            axis.line = element_line(color = "black", size = 1.2))
+            axis.line = element_line(color = "black", size = 1.2))+
+      scale_y_continuous(expand = c(0, 0))
   })
     
-  
-  output$box<- renderPlot({
-    dta %>%
-      mutate(année_publication = as.factor(dta$année_publication)) %>% 
-      ggplot(aes(x=année_publication,y=tx_pauvrete,fill=année_publication))+
-      geom_boxplot()+
-      geom_jitter()+
-      theme_minimal()
-  })
-  
-  
-  # output$lines<- renderPlot({
-  #   dta %>%
-  #     mutate(année_publication = as.factor(dta$année_publication)) %>% 
-  #     group_by(année_publication) %>% 
-  #     summarise(mean_pauvrete = mean(tx_pauvrete,na.rm=T)) %>% 
-  #     ggplot(aes(x=année_publication,y=mean_pauvrete))+
-  #     geom_point()+
-  #     theme_minimal()
-  # })
-  
+
   output$titre_parc_social <- renderUI({
     
     titre_plot <- switch(input$var_parc,
@@ -363,18 +352,6 @@ server <- function(input, output) {
  
   output$parc_social_plot <- renderPlotly({
     
-    noms_var <- c(
-      tx_log_sociaux = "Taux de logements sociaux (en %)",
-      social_nb_logements = "Parc social - Nombre de logements",
-      social_location = "Parc social - Logements mis en location",
-      social_demoli = "Parc social - Logements démolis",
-      social_ventes_physiques = "Parc social - Ventes à des personnes physiques",
-      social_vacants = "Parc social - Taux de logements vacants (en %)",
-      social_individuel = "Parc social - Taux de logements individuels (en %)",
-      social_loyer_m2 = "Parc social - Loyer moyen (en €/m²/mois)",
-      social_age_moyen = "Parc social - Âge moyen du parc (en années)",
-      social_tx_energivores = "Parc social - Taux de logements énergivores (E,F,G) (en %)"
-    )
     
     x_label <- noms_var[[input$var_parc]]
     
@@ -432,18 +409,6 @@ server <- function(input, output) {
   
   output$parc_social_graph2 <- renderPlot({
     
-    noms_var <- c(
-      tx_log_sociaux = "Taux de logements sociaux (en %)",
-      social_nb_logements = "Parc social - Nombre de logements",
-      social_location = "Parc social - Logements mis en location",
-      social_demoli = "Parc social - Logements démolis",
-      social_ventes_physiques = "Parc social - Ventes à des personnes physiques",
-      social_vacants = "Parc social - Taux de logements vacants (en %)",
-      social_individuel = "Parc social - Taux de logements individuels (en %)",
-      social_loyer_m2 = "Parc social - Loyer moyen (en €/m²/mois)",
-      social_age_moyen = "Parc social - Âge moyen du parc (en années)",
-      social_tx_energivores = "Parc social - Taux de logements énergivores (E,F,G) (en %)"
-    )
     
     y_label <- noms_var[[input$var_graph2]]
     
@@ -462,7 +427,7 @@ server <- function(input, output) {
       theme_minimal()+
       labs(caption = "Source : INSEE, SDES et CDC")+
       scale_x_discrete(expand = c(0.01, 0.01))+
-      theme(axis.text = element_text(size=14),
+      theme(axis.text = element_text(size=16),
             axis.title = element_text(size = 18,face="bold"),
             axis.line = element_line(color = "black", size = 1.2))
   })
@@ -548,28 +513,36 @@ server <- function(input, output) {
     
     resACP <- PCA(df, quali.sup=c(1),quanti.sup=c(2,3,4,5,6,7,8,9,10,11,13,14,15,16,17,18),graph=FALSE)
     
-    plot.PCA(resACP, invisible=invisible_opt, title="Graphe des individus de l'ACP", label='quali')
+    plot.PCA(resACP, invisible=invisible_opt, title="Graphe des individus de l'ACP", label='quali')+
+      theme(plot.title = element_text(size=18),
+            axis.title = element_text(size=16))
   })
   
   output$ACP_var <- renderPlot({
     df <- ACP_social()  # <- important !
     resACP <- PCA(df, quali.sup=c(1),quanti.sup=c(2,3,4,5,6,7,8,9,10,11,13,14,15,16,17,18),graph=FALSE) # Ajuster quali.sup selon tes données
-    plot.PCA(resACP,choix = "var")
+    plot.PCA(resACP,choix = "var")+
+      theme(plot.title = element_text(size=18),
+            axis.title = element_text(size=16))
   })
     
   
   output$bivariate_plot <- renderPlotly({
-    plot <- ggplot(france_dep_data, aes(x = .data[[input$var_x]], 
-                                y = .data[[input$var_y]]),
-                                text = paste("Département :", france_dep_data$Departement, 
-                                "<br>Année :", france_dep_data$Annee)) +
-      geom_point(alpha = 0.6, color = "orangered2") +
+    
+    titre1 <- titre_bivaries[[input$var_x]]
+    titre2 <- titre_bivaries[[input$var_y]]
+    
+    
+    plot <- ggplot(dta, aes(x = .data[[input$var_x]], 
+                                y = .data[[input$var_y]]))+
+      geom_point(aes(text = paste("Département :", str_to_sentence(dta$nom_departement),
+                                   "<br>Année :", dta$année_publication)),alpha = 0.6, color = "orangered2") +
       theme_minimal() +
       labs(caption = "Source : INSEE, SDES et CDC")+
       labs(
-        x = input$var_x,
-        y = input$var_y,
-        title = paste("Relation entre", input$var_x, "et", input$var_y)
+        x = noms_var[[input$var_x]],
+        y = noms_var[[input$var_y]],
+        title = paste("Relation entre", titre1, "et", titre2)
       )
     
     ggplotly(plot, tooltip = "text")
